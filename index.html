@@ -570,12 +570,12 @@ const SOURCES=[
    애드핏 심사를 통과하면 자리마다 광고 단위 코드(DAN-...)를 unit에 넣으세요.
    unit이 비어 있으면 그 자리는 나오지 않습니다. 주소 끝에 ?ads=preview 를 붙이면 빈 자리를 점선 상자로 미리 봅니다. */
 const ADFIT={
-  sticky:{unit:'',w:320,h:50},   // 화면 하단 고정 띠
-  home:{unit:'',w:320,h:100},    // 홈 단계 목록 아래
-  result:{unit:'',w:300,h:250},  // 단계 결과 화면
-  footer:{unit:'',w:320,h:100}}; // 모든 화면 맨 아래
+  sticky:{unit:'DAN-x0zqhbNmNLoQ9z0F',w:320,h:50},   // 화면 하단 고정 띠
+  home:{unit:'DAN-RF56XPA9xvYDzQiC',w:320,h:100},    // 홈 단계 목록 아래
+  result:{unit:'DAN-ZpXj4sajCxitoNT2',w:300,h:250},  // 단계 결과 화면
+  footer:{unit:'DAN-2AQIhPEa62x5Eyi4',w:320,h:100}}; // 모든 화면 맨 아래
 const AD_PREVIEW=/[?&]ads=preview\b/.test(location.search);
-const AD_SRC='https://t1.daumcdn.net/kas/static/ba.min.js';
+const AD_SRC='https://t1.kakaocdn.net/kas/static/ba.min.js';
 let adPending=false;
 function adSlot(key,label=true){const c=ADFIT[key];if(!c||(!c.unit&&!AD_PREVIEW))return null;
   const box=h('aside',{class:'ad ad-'+key,'aria-label':'광고'},label&&h('span',{class:'adl'},'광고'));
