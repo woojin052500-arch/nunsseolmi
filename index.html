@@ -616,16 +616,16 @@ const SOURCES=[
 
 /* ---------- 광고 (카카오 애드핏) ----------
    애드핏 심사를 통과하면 자리마다 광고 단위 코드(DAN-...)를 unit에 넣으세요.
-   unit이 비어 있으면 그 자리는 나오지 않습니다. 주소 끝에 ?ads=preview 를 붙이면 빈 자리를 점선 상자로 미리 봅니다. */
+   unit이 비어 있거나 on:false면 그 자리는 나오지 않습니다. 지금은 홈과 결과 화면 두 곳만 켜 두었습니다. 주소 끝에 ?ads=preview 를 붙이면 빈 자리를 점선 상자로 미리 봅니다. */
 const ADFIT={
-  sticky:{unit:'DAN-x0zqhbNmNLoQ9z0F',w:320,h:50},   // 화면 하단 고정 띠
+  sticky:{unit:'DAN-x0zqhbNmNLoQ9z0F',w:320,h:50,on:false},   // 화면 하단 고정 띠 (꺼 둠)
   home:{unit:'DAN-RF56XPA9xvYDzQiC',w:320,h:100},    // 홈 단계 목록 아래
   result:{unit:'DAN-ZpXj4sajCxitoNT2',w:300,h:250},  // 단계 결과 화면
-  footer:{unit:'DAN-2AQIhPEa62x5Eyi4',w:320,h:100}}; // 모든 화면 맨 아래
+  footer:{unit:'DAN-2AQIhPEa62x5Eyi4',w:320,h:100,on:false}}; // 모든 화면 맨 아래 (꺼 둠)
 const AD_PREVIEW=/[?&]ads=preview\b/.test(location.search);
 const AD_SRC='https://t1.kakaocdn.net/kas/static/ba.min.js';
 let adNew=[],adScript=false;
-function adSlot(key,label=true){const c=ADFIT[key];if(!c||(!c.unit&&!AD_PREVIEW))return null;
+function adSlot(key,label=true){const c=ADFIT[key];if(!c||c.on===false||(!c.unit&&!AD_PREVIEW))return null;
   const box=h('aside',{class:'ad ad-'+key,'aria-label':'광고'},label&&h('span',{class:'adl'},'광고'));
   if(c.unit){const ins=h('ins',{class:'kakao_ad_area',style:'display:none','data-ad-unit':c.unit,'data-ad-width':c.w,'data-ad-height':c.h,'data-ad-onfail':'nunsseolmiAdFail'});
     box.classList.add('wait');box.append(ins);adNew.push(ins);
@@ -720,9 +720,9 @@ function renderResult(st,rs){const avg=Math.round(run.scores.reduce((a,b)=>a+b,0
   const msg=avg>=90?'눈썰미가 좋아요. 다음 단계로 가도 됩니다.':avg>=70?'감이 잡히고 있어요. 틀린 문제의 이유만 한 번 더 보세요.':'한 번 더 풀면 달라집니다. 문제는 풀 때마다 조금씩 바뀌어요.';
   appEl.append(topBar(),h('h1',{},`${st.name} 결과`),h('p',{class:'big'},avg,h('small',{},'점')),h('p',{class:'lede'},msg+(prev!=null&&avg>prev?` 지난 최고 기록 ${prev}점을 넘었어요.`:'')),
     h('ul',{class:'rows'},rs.map((r,i)=>h('li',{},h('span',{},r.term),h('b',{},`${scores[i]}점`)))),
-    adSlot('result'),
     h('div',{class:'actions'},h('button',{class:'btn ghost',type:'button',onclick(){viewStage(st);window.scrollTo(0,0);}},'다시 풀기'),
-      nx?h('a',{class:'btn primary',href:'#'+nx.id},`다음 단계: ${nx.name}`):st.id==='mix'?h('a',{class:'btn primary',href:'#home'},'단계 목록으로'):h('a',{class:'btn primary',href:'#mix'},'섞어 풀기')));
+      nx?h('a',{class:'btn primary',href:'#'+nx.id},`다음 단계: ${nx.name}`):st.id==='mix'?h('a',{class:'btn primary',href:'#home'},'단계 목록으로'):h('a',{class:'btn primary',href:'#mix'},'섞어 풀기')),
+    adSlot('result'));
   pageAds();}
 
 function viewSources(){run=null;appEl.textContent='';
