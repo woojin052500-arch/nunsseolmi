@@ -177,11 +177,25 @@ input[type=range]{width:100%;height:44px;margin:0;accent-color:var(--select);bac
 .src ul{margin:0;padding-left:18px}
 .src li{font-size:14.5px;margin:4px 0}
 .src a{text-underline-offset:3px}
+/* 광고(카카오 애드핏): 콘텐츠와 분리된 자리, '광고' 표시, 문제 조작부와 떨어뜨림 */
+.ad{display:grid;justify-items:center;gap:4px;margin:36px 0}
+.ad[hidden]{display:none}
+.adl{font-size:11px;line-height:1;color:var(--ink-2)}
+.adph{max-width:100%;display:grid;place-items:center;border:1px dashed var(--line);border-radius:4px;background:var(--panel);font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.wrap.ad-foot{padding-top:0;padding-bottom:24px}
+.ad-foot:empty{display:none}
+.ad-foot .ad{margin:0}
+.ad-sticky{position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;justify-content:center;padding:4px 0 calc(4px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line)}
+.ad-sticky:empty{display:none}
+.ad-sticky .ad{margin:0}
+body.has-sticky{padding-bottom:calc(58px + env(safe-area-inset-bottom))}
 @media (min-width:600px){.wrap{padding-top:28px}h1{font-size:34px}}
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
+<div class="wrap ad-foot" id="ad-foot"></div>
+<div class="ad-sticky" id="ad-sticky"></div>
 <script>
 (()=>{'use strict';
 /* ---------- 작은 도구들 ---------- */
@@ -552,6 +566,33 @@ const SOURCES=[
   ['형태감과 무게중심',[['Bjango, 시각 보정','https://bjango.com/articles/opticaladjustments/'],['Cloud Four, 겹친 둥근 모서리 계산','https://cloudfour.com/thinks/the-math-behind-nesting-rounded-corners/'],['Smashing Magazine, 시각적 무게와 방향','https://www.smashingmagazine.com/2014/12/design-principles-visual-weight-direction'],['Smashing Magazine, 구성의 균형','https://www.smashingmagazine.com/2015/06/design-principles-compositional-balance-symmetry-asymmetry/']]],
   ['연습 방식',[['Schwartz & Bransford (1998), 먼저 비교하고 설명은 나중에','https://www.wright.edu/sites/www.wright.edu/files/uploads/2017/Feb/event/Schwartz_Bransford_1998_TimeForTelling.pdf'],['Kornell & Bjork (2008), 섞어서 연습하기','https://bjorklab.psych.ucla.edu/wp-content/uploads/sites/13/2016/07/Kornell_Bjork_2008_PsychScience.pdf'],['Thai 외 (2015), 정답을 먼저 보여 주는 지각 학습','https://escholarship.org/content/qt8nv5m69d/qt8nv5m69d.pdf']]]];
 
+/* ---------- 광고 (카카오 애드핏) ----------
+   애드핏 심사를 통과하면 자리마다 광고 단위 코드(DAN-...)를 unit에 넣으세요.
+   unit이 비어 있으면 그 자리는 나오지 않습니다. 주소 끝에 ?ads=preview 를 붙이면 빈 자리를 점선 상자로 미리 봅니다. */
+const ADFIT={
+  sticky:{unit:'',w:320,h:50},   // 화면 하단 고정 띠
+  home:{unit:'',w:320,h:100},    // 홈 단계 목록 아래
+  result:{unit:'',w:300,h:250},  // 단계 결과 화면
+  footer:{unit:'',w:320,h:100}}; // 모든 화면 맨 아래
+const AD_PREVIEW=/[?&]ads=preview\b/.test(location.search);
+const AD_SRC='https://t1.daumcdn.net/kas/static/ba.min.js';
+let adPending=false;
+function adSlot(key,label=true){const c=ADFIT[key];if(!c||(!c.unit&&!AD_PREVIEW))return null;
+  const box=h('aside',{class:'ad ad-'+key,'aria-label':'광고'},label&&h('span',{class:'adl'},'광고'));
+  if(c.unit){box.append(h('ins',{class:'kakao_ad_area',style:'display:none','data-ad-unit':c.unit,'data-ad-width':c.w,'data-ad-height':c.h,'data-ad-onfail':'nunsseolmiAdFail'}));adPending=true;}
+  else box.append(h('div',{class:'adph',style:`width:${c.w}px;height:${c.h}px`},`애드핏 ${c.w}×${c.h}`));
+  return box;}
+/* 채울 광고가 없으면 자리를 접는다 */
+window.nunsseolmiAdFail=el=>{const b=el&&el.closest&&el.closest('.ad');if(!b)return;b.hidden=true;
+  if(b.closest('#ad-sticky')){b.parentNode.textContent='';document.body.classList.remove('has-sticky');}};
+/* 화면이 바뀔 때마다 광고 자리를 새로 만들고 애드핏 스크립트를 다시 불러 새 자리를 채운다(해시 라우팅 대응) */
+function pageAds(){const foot=document.getElementById('ad-foot'),bar=document.getElementById('ad-sticky');
+  foot.textContent='';bar.textContent='';const f=adSlot('footer');if(f)foot.append(f);
+  const sb=adSlot('sticky',false);if(sb)bar.append(sb);document.body.classList.toggle('has-sticky',!!sb);
+  if(!adPending)return;adPending=false;
+  document.querySelectorAll('script[data-adfit]').forEach(x=>x.remove());
+  const sc=document.createElement('script');sc.src=AD_SRC;sc.async=true;sc.setAttribute('data-adfit','');document.body.append(sc);}
+
 /* ---------- 상태 ---------- */
 const KEY='nunsseolmi-v2';let best={};
 try{best=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){best={};}
@@ -600,6 +641,7 @@ function viewHome(){run=null;appEl.textContent='';const warm=h('div',{});
     h('div',{class:'legend'},h('span',{},stdChip('std'),'웹 접근성 표준'),h('span',{},stdChip('conv'),'실무 권장값'),h('span',{},stdChip('eye'),'정해진 수치 없음')),
     h('section',{class:'sec'},h('h2',{},'먼저 한 문제 풀어보세요'),warm),
     h('section',{class:'sec'},h('h2',{},'단계'),layers),
+    adSlot('home'),
     h('p',{class:'foot'},'문항마다 기준이 표준인지 권장인지 꼬리표로 표시했어요. 기준과 수치는 ',h('a',{href:'#sources'},'참고한 자료'),'에서 확인할 수 있어요. 진행 상황은 이 기기 브라우저에만 저장됩니다.'));
   const mountWarm=()=>mountRound(warm,triangle,{onDone(res,actions){actions.append(h('button',{class:'btn ghost',type:'button',onclick:mountWarm},'다시 해보기'),h('a',{class:'btn primary',href:'#'+(next?next.id:'mix')},next?`${next.name} 단계 시작`:'섞어 풀기'));}});
   mountWarm();}
@@ -623,8 +665,10 @@ function renderResult(st,rs){const avg=Math.round(run.scores.reduce((a,b)=>a+b,0
   const msg=avg>=90?'눈썰미가 좋아요. 다음 단계로 가도 됩니다.':avg>=70?'감이 잡히고 있어요. 틀린 문제의 이유만 한 번 더 보세요.':'한 번 더 풀면 달라집니다. 문제는 풀 때마다 조금씩 바뀌어요.';
   appEl.append(topBar(),h('h1',{},`${st.name} 결과`),h('p',{class:'big'},avg,h('small',{},'점')),h('p',{class:'lede'},msg+(prev!=null&&avg>prev?` 지난 최고 기록 ${prev}점을 넘었어요.`:'')),
     h('ul',{class:'rows'},rs.map((r,i)=>h('li',{},h('span',{},r.term),h('b',{},`${scores[i]}점`)))),
+    adSlot('result'),
     h('div',{class:'actions'},h('button',{class:'btn ghost',type:'button',onclick(){viewStage(st);window.scrollTo(0,0);}},'다시 풀기'),
-      nx?h('a',{class:'btn primary',href:'#'+nx.id},`다음 단계: ${nx.name}`):st.id==='mix'?h('a',{class:'btn primary',href:'#home'},'단계 목록으로'):h('a',{class:'btn primary',href:'#mix'},'섞어 풀기')));}
+      nx?h('a',{class:'btn primary',href:'#'+nx.id},`다음 단계: ${nx.name}`):st.id==='mix'?h('a',{class:'btn primary',href:'#home'},'단계 목록으로'):h('a',{class:'btn primary',href:'#mix'},'섞어 풀기')));
+  pageAds();}
 
 function viewSources(){run=null;appEl.textContent='';
   appEl.append(topBar(),h('h1',{},'참고한 자료'),
@@ -634,9 +678,9 @@ function viewSources(){run=null;appEl.textContent='';
     h('div',{class:'actions'},h('a',{class:'btn ghost',href:'#home'},'단계 목록으로')));}
 
 function route(){const id=(location.hash||'').slice(1);
-  if(id==='sources')return viewSources();
   const st=id==='mix'?MIX:STAGES.find(x=>x.id===id);
-  if(st)return viewStage(st);viewHome();}
+  if(id==='sources')viewSources();else if(st)viewStage(st);else viewHome();
+  pageAds();}
 window.addEventListener('hashchange',()=>{route();window.scrollTo(0,0);});
 const start=d=>{if(d&&d.run&&d.run.id)run=d.run;route();};
 const hot=window.claude&&window.claude.hot;
