@@ -47,3 +47,11 @@
 - 주소 끝에 `?ads=preview`를 붙이면 빈 자리를 점선 상자로 미리 볼 수 있습니다.
 - 채울 광고가 없으면 그 자리는 자동으로 접힙니다(`data-ad-onfail`).
 - 화면이 바뀔 때마다 광고 자리를 새로 만들고, 애드핏 스크립트를 다시 불러옵니다. 문제를 넘길 때는 다시 불러오지 않습니다.
+
+## 검색 등록 (SEO)
+
+- `index.html` 머리말에 설명, 대표 주소(canonical), 공유 미리보기(Open Graph), 구조화 데이터가 들어 있습니다.
+- `robots.txt`, `sitemap.xml`, `og.png`(공유 이미지), `favicon.svg`가 사이트 루트에 있습니다.
+- 사이트 소유 확인: 구글 서치콘솔과 네이버 서치어드바이저에서 "HTML 태그" 방식으로 받은 값을 `index.html`의 `google-site-verification`, `naver-site-verification` 메타 태그 `content`에 넣습니다.
+- 소유 확인 뒤 두 곳 모두에 사이트맵 `https://nunsseolmi.vercel.app/sitemap.xml`을 제출합니다.
+- 주소가 바뀌면 `index.html`, `robots.txt`, `sitemap.xml`의 `https://nunsseolmi.vercel.app/`를 함께 바꿔야 합니다.
