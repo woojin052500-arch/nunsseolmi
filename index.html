@@ -624,25 +624,29 @@ const ADFIT={
   footer:{unit:'DAN-2AQIhPEa62x5Eyi4',w:320,h:100}}; // 모든 화면 맨 아래
 const AD_PREVIEW=/[?&]ads=preview\b/.test(location.search);
 const AD_SRC='https://t1.kakaocdn.net/kas/static/ba.min.js';
-let adPending=false;
+let adNew=[],adScript=false;
 function adSlot(key,label=true){const c=ADFIT[key];if(!c||(!c.unit&&!AD_PREVIEW))return null;
   const box=h('aside',{class:'ad ad-'+key,'aria-label':'광고'},label&&h('span',{class:'adl'},'광고'));
   if(c.unit){const ins=h('ins',{class:'kakao_ad_area',style:'display:none','data-ad-unit':c.unit,'data-ad-width':c.w,'data-ad-height':c.h,'data-ad-onfail':'nunsseolmiAdFail'});
-    box.classList.add('wait');box.append(ins);adPending=true;
+    box.classList.add('wait');box.append(ins);adNew.push(ins);
+    /* 애드핏이 광고를 채우면 ins를 보이게 바꾼다. 그때 '광고' 표시와 여백을 편다 */
     new MutationObserver((m,o)=>{if(ins.style.display==='none'&&!ins.querySelector('iframe'))return;o.disconnect();box.classList.remove('wait');
       if(box.closest('#ad-sticky'))document.body.classList.add('has-sticky');}).observe(ins,{attributes:true,attributeFilter:['style'],childList:true,subtree:true});}
   else box.append(h('div',{class:'adph',style:`width:${c.w}px;height:${c.h}px`},`애드핏 ${c.w}×${c.h}`));
   return box;}
 /* 채울 광고가 없으면 자리를 접는다 */
 window.nunsseolmiAdFail=el=>{const b=el&&el.closest&&el.closest('.ad');if(!b)return;b.hidden=true;
-  if(b.closest('#ad-sticky')){b.parentNode.textContent='';document.body.classList.remove('has-sticky');}};
-/* 화면이 바뀔 때마다 광고 자리를 새로 만들고 애드핏 스크립트를 다시 불러 새 자리를 채운다(해시 라우팅 대응) */
+  if(b.closest('#ad-sticky'))document.body.classList.remove('has-sticky');};
+/* 맨 아래와 하단 띠 광고는 한 번만 만들어 화면이 바뀌어도 그대로 둔다.
+   애드핏 스크립트도 한 번만 불러온다. 처음 실행될 때 화면에 있는 광고 자리를 모두 채우고,
+   그 뒤에 새로 생긴 자리(홈, 결과 화면)는 adfit.render로 하나씩 채운다.
+   화면에서 사라진 자리는 애드핏이 스스로 정리한다. */
 function pageAds(){const foot=document.getElementById('ad-foot'),bar=document.getElementById('ad-sticky');
-  foot.textContent='';bar.textContent='';const f=adSlot('footer');if(f)foot.append(f);
-  const sb=adSlot('sticky',false);if(sb)bar.append(sb);document.body.classList.toggle('has-sticky',!!sb&&!sb.classList.contains('wait'));
-  if(!adPending)return;adPending=false;
-  document.querySelectorAll('script[data-adfit]').forEach(x=>x.remove());
-  const sc=document.createElement('script');sc.src=AD_SRC;sc.async=true;sc.setAttribute('data-adfit','');document.body.append(sc);}
+  if(!foot.firstChild){const f=adSlot('footer');if(f)foot.append(f);}
+  if(!bar.firstChild){const sb=adSlot('sticky',false);if(sb){bar.append(sb);if(!sb.classList.contains('wait'))document.body.classList.add('has-sticky');}}
+  const fresh=adNew.filter(x=>x.isConnected);adNew=[];if(!fresh.length)return;
+  if(!adScript){adScript=true;const sc=document.createElement('script');sc.src=AD_SRC;sc.async=true;document.body.append(sc);return;}
+  const af=window.adfit;if(af&&typeof af.render==='function')fresh.forEach(x=>{try{if(typeof af.destroy==='function')af.destroy(x.getAttribute('data-ad-unit'));af.render(x);}catch(e){}});}
 
 /* ---------- 상태 ---------- */
 const KEY='nunsseolmi-v2';let best={};
