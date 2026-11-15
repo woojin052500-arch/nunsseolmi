@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>눈썰미 디자인 감각 훈련</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gasoek+One&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* 레이아웃: 디자인 툴 캔버스 위에 흰 아트보드가 놓인 한 단 구성. 글은 왼쪽 정렬, 채점 결과는 분홍 안내선과 치수 꼬리표로 아트보드 위에 직접 표시 */
+  --canvas:#E8EBEF;
+  --dot:#D3D9E1;
+  --panel:#F6F7F9;
+  --ink:#1A2233;
+  --ink-2:#596275;
+  --line:#CBD2DB;
+  --guide:#D92562;
+  --select:#2B63F6;
+  --on-select:#FFFFFF;
+  --ok:#0A7F58;
+  --off:#A84B00;
+  --paper:#FFFFFF;
+  --paper-ink:#1A2233;
+  --display:"Gasoek One","IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --canvas:#1B1E24;--dot:#2A2F38;--panel:#252930;--ink:#EEF1F5;--ink-2:#A6AFBE;--line:#3B424E;
+    --guide:#FF6F9C;--select:#86A8FF;--on-select:#0E1730;--ok:#4FD9A7;--off:#F2B263;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --canvas:#1B1E24;--dot:#2A2F38;--panel:#252930;--ink:#EEF1F5;--ink-2:#A6AFBE;--line:#3B424E;
+  --guide:#FF6F9C;--select:#86A8FF;--on-select:#0E1730;--ok:#4FD9A7;--off:#F2B263;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background-color:var(--canvas);
+  background-image:radial-gradient(var(--dot) 1px,transparent 1.2px);background-size:20px 20px;
+  color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;word-break:keep-all;
+}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--select);outline-offset:2px}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px 56px}
+
+/* 상단 */
+.top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:4px 0 20px}
+.wordmark{font-family:var(--display);font-size:26px;line-height:1;letter-spacing:-.01em;text-decoration:none}
+.count{font-size:13.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+h1{font-size:28px;line-height:1.3;letter-spacing:-.02em;font-weight:700;margin:0;text-wrap:balance}
+.lede{margin:10px 0 0;color:var(--ink-2);font-size:15.5px;max-width:34em}
+h2{font-size:19px;line-height:1.4;letter-spacing:-.01em;font-weight:700;margin:0;text-wrap:balance}
+.sec{margin-top:36px}
+.sec > h2{margin-bottom:12px}
+
+/* 문제 */
+.tip{margin:0 0 6px;color:var(--ink-2);font-size:15px}
+.q{font-size:19px}
+.frame{margin-top:14px}
+.fname{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2);margin-bottom:6px}
+/* 기준의 지위: 표준(WCAG)만 채운 꼬리표, 나머지는 외곽선 */
+.std{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;line-height:1;padding:4px 8px;border-radius:99px;border:1px solid var(--line);color:var(--ink-2);white-space:nowrap}
+.std::before{content:"";width:6px;height:6px;border-radius:50%;border:1.5px solid currentColor}
+.std.k-std{background:var(--ink);border-color:var(--ink);color:var(--canvas)}
+.std.k-std::before{background:currentColor}
+.fbs{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 0;padding-top:10px;border-top:1px dashed var(--line);font-size:13px;color:var(--ink-2)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:14px 0 0;font-size:13.5px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+/* 답한 뒤 같은 자리에 겹쳐 번갈아 보기 */
+.flipw{display:grid;gap:8px}
+.fliph{display:flex;align-items:center;gap:8px}
+.fliph .nlab{margin-right:0}
+.flipl{font-size:12.5px;font-weight:600;padding:2px 9px;border-radius:99px;background:var(--ok);color:var(--panel)}
+.flipl.alt{background:var(--off)}
+.flip{display:grid}
+.flip.half{max-width:50%}
+.flip > *{grid-area:1/1;cursor:default}
+.flip > .off{visibility:hidden}
+.opts.blur .opt > div{filter:blur(5px)}
+@media (prefers-reduced-motion:no-preference){.opts .opt > div{transition:filter .35s ease}}
+.artboard{background:var(--paper);color:var(--paper-ink);border-radius:2px;overflow:hidden}
+.artboard.bare{background:none;overflow:visible}
+.svgb{display:block;width:100%;height:auto;user-select:none;-webkit-user-select:none}
+.svgb text{font-family:var(--body)}
+.hit{cursor:pointer}
+.hit:focus-visible{outline:none;stroke:#2B63F6;stroke-width:2}
+.grab{cursor:grab;touch-action:none}
+.grab:focus-visible{outline:none}
+.grab:focus-visible > :last-child{stroke:#F2B400;stroke-width:2}
+.locked,.locked *{pointer-events:none}
+.rl{animation:rl .3s ease-out both}
+@keyframes rl{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.rl{animation:none}}
+
+.mk{font-size:14px;line-height:1.55;text-align:left;color:#1A2233}
+.opts{display:grid;gap:12px}
+.opts.row{grid-template-columns:1fr 1fr}
+.opt{position:relative;background:var(--paper);color:var(--paper-ink);border-radius:2px;cursor:pointer;outline:2px solid transparent;outline-offset:0}
+.opt:focus-visible{outline-color:var(--select)}
+.optk{position:absolute;top:6px;right:9px;font-size:11.5px;font-weight:600;color:#7C8596;z-index:1}
+.opt.right{outline:3px solid var(--ok)}
+.opt.right .optk{color:#fff;background:#0A7F58;padding:1px 7px;border-radius:99px;top:7px;right:7px}
+.opt.other{opacity:.62}
+.swg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:16px}
+.sw{aspect-ratio:1.5;border-radius:6px;cursor:pointer}
+.sw.ring{outline:3px solid #D92562;outline-offset:3px}
+.match{display:grid;grid-template-rows:96px 96px}
+.mt{position:relative}
+.mt span{position:absolute;left:10px;top:10px;background:#fff;color:#1A2233;font-size:12px;font-weight:600;padding:1px 8px;border-radius:99px}
+
+.controls{display:grid;gap:10px;margin-top:14px}
+.controls:empty{display:none}
+.sl{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+.sl label{font-size:14px;font-weight:600;min-width:5.5em}
+input[type=range]{width:100%;height:44px;margin:0;accent-color:var(--select);background:none}
+.nudges{display:flex;align-items:center;gap:8px}
+.nlab{font-size:13.5px;color:var(--ink-2);margin-right:auto}
+.nudge{width:46px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:600 17px/1 var(--body);cursor:pointer}
+.nudge:active{background:var(--line)}
+
+.fb{margin-top:14px;padding:14px 16px;background:var(--panel);border-radius:12px;border:1px solid var(--line)}
+.fbh{display:flex;align-items:center;gap:8px;font-size:17px}
+.fbh svg{flex:none}
+.fbh strong{font-weight:700}
+.fbh span{color:var(--ink-2);font-size:14.5px}
+.fb.good .fbh strong,.fb.good .fbh svg{color:var(--ok)}
+.fb.off .fbh strong,.fb.off .fbh svg{color:var(--off)}
+.fbd{margin:6px 0 0;font-size:13.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.fbw{margin:6px 0 0;font-size:15px;max-width:34em}
+
+.actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.actions:empty{display:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border-radius:10px;border:1px solid transparent;font:600 16px/1.2 var(--body);cursor:pointer;text-decoration:none;flex:1 1 auto}
+.btn.primary{background:var(--select);color:var(--on-select)}
+.btn.ghost{background:none;border-color:var(--line);color:var(--ink)}
+
+/* 단계 목록: 디자인 툴의 레이어 패널 */
+.layers{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.grp{display:flex;align-items:center;gap:6px;padding:14px 14px 6px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.grp svg{flex:none}
+.layer{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:13px 14px;text-decoration:none;border-top:1px solid var(--line)}
+.grp + .layer{border-top:0}
+.layer .n{font-family:var(--display);font-size:19px;line-height:1;color:var(--ink-2)}
+.layer .nm{display:block;font-weight:600;font-size:16px;line-height:1.35}
+.layer .ds{display:block;font-size:13.5px;color:var(--ink-2);line-height:1.4}
+.layer .stt{font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.layer.done .stt{color:var(--ok);font-weight:600}
+.layer.next{box-shadow:inset 3px 0 0 var(--select)}
+.layer.next .stt{color:var(--select);font-weight:600}
+.layer.mix{border-top:1px solid var(--line)}
+.foot{margin-top:28px;font-size:13.5px;color:var(--ink-2)}
+
+/* 단계 진행 */
+.sbar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
+.back{display:inline-flex;align-items:center;gap:4px;min-height:44px;font-size:14.5px;text-decoration:none;color:var(--ink-2)}
+.sname{font-weight:700;font-size:15px}
+.sname span{font-weight:400;color:var(--ink-2);font-variant-numeric:tabular-nums;margin-left:6px}
+.segs{display:flex;gap:4px;margin:4px 0 22px}
+.segs i{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.segs i.d{background:var(--ink)}
+.segs i.c{background:var(--select)}
+
+/* 결과 */
+.big{font-family:var(--display);font-size:64px;line-height:1;margin:6px 0 0;font-variant-numeric:tabular-nums}
+.big small{font-family:var(--body);font-size:18px;font-weight:600;margin-left:4px}
+.rows{list-style:none;margin:20px 0 0;padding:0;border-top:1px solid var(--line)}
+.rows li{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:15px}
+.rows b{font-variant-numeric:tabular-nums;font-weight:600}
+.src h3{font-size:15px;margin:22px 0 4px}
+.src ul{margin:0;padding-left:18px}
+.src li{font-size:14.5px;margin:4px 0}
+.src a{text-underline-offset:3px}
+@media (min-width:600px){.wrap{padding-top:28px}h1{font-size:34px}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+(()=>{'use strict';
+/* ---------- 작은 도구들 ---------- */
+const NS='http://www.w3.org/2000/svg';
+function setA(e,a){for(const k in a||{}){const v=a[k];if(v==null||v===false)continue;
+  if(k==='style'&&typeof v==='object')Object.assign(e.style,v);
+  else if(k.slice(0,2)==='on'&&typeof v==='function')e.addEventListener(k.slice(2),v);
+  else if(k==='html')e.innerHTML=v;
+  else e.setAttribute(k,v===true?'':v);}return e;}
+function add(e,kids){for(const c of kids.flat(9)){if(c==null||c===false||c==='')continue;e.append(c.nodeType?c:document.createTextNode(String(c)));}return e;}
+const h=(t,a,...k)=>add(setA(document.createElement(t),a),k);
+const s=(t,a,...k)=>add(setA(document.createElementNS(NS,t),a),k);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const byErr=(e,ok,zero)=>Math.round(100*clamp(1-(e-ok)/(zero-ok),0,1));
+const rnd=n=>Math.floor(Math.random()*n);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;};
+const fmt=n=>String(Math.round(n*10)/10);
+const P={ink:'#1A2233',mute:'#6B7486',faint:'#DDE2E9',soft:'#F1F3F6',blue:'#2B63F6',guide:'#D92562'};
+
+function hsl2rgb(hh,ss,l){ss/=100;l/=100;const k=n=>(n+hh/30)%12,a=ss*Math.min(l,1-l),f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));return[f(0),f(8),f(4)].map(v=>Math.round(v*255));}
+function lum(c){const v=c.map(x=>{x/=255;return x<=0.04045?x/12.92:Math.pow((x+0.055)/1.055,2.4);});return .2126*v[0]+.7152*v[1]+.0722*v[2];}
+function contrast(a,b){const x=lum(a),y=lum(b);return(Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
+const hex2rgb=x=>[1,3,5].map(i=>parseInt(x.slice(i,i+2),16));
+/* 대비는 반올림하지 않는다(WCAG): 4.497은 4.49로 보여 줘야 미달이 숨지 않는다 */
+const ratio=c=>(Math.floor(c*100)/100).toFixed(2);
+
+/* 기준의 지위. 표준만 오답 처리하고, 나머지는 권장 범위로 감점한다 */
+const STD={
+  std:['표준','WCAG 웹 접근성 표준입니다. 기준에 못 미치면 오답이에요.'],
+  guide:['플랫폼 가이드','특정 디자인 시스템(Material, Apple 등) 안에서의 기준입니다.'],
+  conv:['권장','표준이 아닌 실무 관례예요. 범위 밖이면 감점만 합니다.'],
+  geo:['계산값','도형이나 공식에서 계산으로 나온 값입니다.'],
+  perc:['지각 연습','규칙이 아니라 눈의 민감도를 기르는 문제예요.'],
+  eye:['눈으로 판단','정해진 수치가 없어 넓은 범위를 정답으로 봅니다.']};
+const stdChip=k=>STD[k]&&h('span',{class:'std k-'+k},STD[k][0]);
+const S=(r,k)=>Object.assign(r,{std:k});
+
+function tap(el,fn,label){el.setAttribute('tabindex','0');el.setAttribute('role','button');if(label)el.setAttribute('aria-label',label);
+  el.addEventListener('click',fn);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fn(e);}});return el;}
+function svgBoard(ctx,w,hh,bg){const v=s('svg',{viewBox:`0 0 ${w} ${hh}`,class:'svgb'});if(bg)v.style.background=bg;ctx.board.append(v);return v;}
+function gl(v,x1,y1,x2,y2,dash){const l=s('line',{x1,y1,x2,y2,stroke:P.guide,'stroke-width':1,class:'rl','stroke-dasharray':dash?'3 3':null});v.append(l);return l;}
+function tag(v,x,y,txt){const t=s('text',{x,y,'font-size':11.5,'font-weight':600,fill:'#fff','text-anchor':'middle','dominant-baseline':'central'},txt);
+  const g=s('g',{class:'rl'});v.append(g);g.append(t);let b;try{b=t.getBBox();}catch(e){b=null;}
+  if(!b||!b.width)b={x:x-txt.length*5.5,y:y-8,width:txt.length*11,height:16};
+  g.insertBefore(s('rect',{x:b.x-6,y:b.y-3,width:b.width+12,height:b.height+6,rx:4,fill:P.guide}),t);return g;}
+function ring(v,x,y,w,hh,r){v.append(s('rect',{x,y,width:w,height:hh,rx:r||6,fill:'none',stroke:P.guide,'stroke-width':2,class:'rl'}));}
+function slider(ctx,o){const inp=h('input',{type:'range',id:o.id,min:o.min,max:o.max,step:o.step,value:o.value});
+  inp.addEventListener('input',()=>o.on(+inp.value));ctx.controls.append(h('div',{class:'sl'},h('label',{for:o.id},o.label),inp));o.on(+o.value);return inp;}
+function drag(svg,el,o){let st=null;
+  const pt=ev=>{const p=svg.createSVGPoint();p.x=ev.clientX;p.y=ev.clientY;return p.matrixTransform(svg.getScreenCTM().inverse());};
+  el.addEventListener('pointerdown',ev=>{try{el.setPointerCapture(ev.pointerId);}catch(e){}const p=pt(ev),c=o.get();st={px:p.x,py:p.y,x:c.x,y:c.y};ev.preventDefault();});
+  el.addEventListener('pointermove',ev=>{if(!st)return;const p=pt(ev);o.set(st.x+p.x-st.px,st.y+p.y-st.py);});
+  const end=()=>{st=null;};el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
+  el.setAttribute('tabindex','0');el.setAttribute('role','slider');el.setAttribute('aria-label',o.label||'끌어서 옮기기');
+  el.addEventListener('keydown',ev=>{const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[ev.key];if(!d)return;ev.preventDefault();const c=o.get(),k=ev.shiftKey?5:1;o.set(c.x+d[0]*k,c.y+d[1]*k);});}
+function nudges(ctx,axis,move){const mk=(t,l,dx,dy)=>h('button',{class:'nudge',type:'button','aria-label':l,onclick(){move(dx,dy);}},t);
+  const row=h('div',{class:'nudges'},h('span',{class:'nlab'},'1px씩 옮기기'));
+  if(axis!=='y')row.append(mk('←','왼쪽으로 1px',-1,0),mk('→','오른쪽으로 1px',1,0));
+  if(axis!=='x')row.append(mk('↑','위로 1px',0,-1),mk('↓','아래로 1px',0,1));
+  ctx.controls.append(row);}
+
+/* 둘 중 고르기: 먼저 고르고, 이유는 고른 뒤에 보여준다 */
+function pick(d){return{term:d.term,q:d.q||'더 나은 쪽을 누르세요',build(ctx){
+  const order=Math.random()<.5?['good','bad']:['bad','good'];
+  const wrap=h('div',{class:'opts'+(d.row?' row':'')+(d.blur?' blur':'')});ctx.board.classList.add('bare');
+  order.forEach((k,i)=>{const b=h('div',{class:'opt'},h('span',{class:'optk'},'AB'[i]),h('div',{html:d[k]}));
+    tap(b,()=>{wrap.classList.remove('blur');[...wrap.children].forEach((o,j)=>{const good=order[j]==='good';o.classList.add(good?'right':'other');if(good)o.querySelector('.optk').textContent='AB'[j]+' 더 나은 쪽';});
+      ctx.done({binary:true,score:k==='good'?100:0,detail:d.detail,why:d.why});flipper(ctx,d);},'보기 '+'AB'[i]);
+    wrap.append(b);});
+  ctx.board.append(wrap);}};}
+
+/* 답한 뒤: 두 보기를 같은 자리에 겹쳐 놓고 번갈아 보며 무엇이 바뀌었는지 확인 */
+function flipper(ctx,d){
+  const g=h('div',{class:'opt',html:d.good}),b=h('div',{class:'opt off',html:d.bad}),lab=h('span',{class:'flipl'},'더 나은 쪽');
+  let alt=false;const btn=h('button',{class:'btn ghost',type:'button','aria-pressed':'false',onclick(){alt=!alt;
+    g.classList.toggle('off',alt);b.classList.toggle('off',!alt);lab.textContent=alt?'다른 쪽':'더 나은 쪽';lab.classList.toggle('alt',alt);btn.setAttribute('aria-pressed',String(alt));}},'번갈아 보기');
+  ctx.controls.append(h('div',{class:'flipw'},h('div',{class:'fliph'},h('span',{class:'nlab'},'같은 자리에 겹쳐 비교하기'),lab),h('div',{class:'flip'+(d.row?' half':''),'aria-live':'polite'},g,b),btn));}
+
+/* ---------- 1. 정렬 ---------- */
+const alignSpot=d=>({term:'정렬선',q:d>4?'혼자 어긋난 줄을 누르세요':`이번엔 ${d}px 차이예요. 어긋난 줄을 누르세요`,build(ctx){
+  const v=svgBoard(ctx,320,212),rows=['알림 설정','결제 수단','친구 초대','고객센터','버전 정보'],odd=rnd(5),dir=Math.random()<.5?-1:1,X=58;
+  rows.forEach((t,i)=>{const y=30+i*38,x=X+(i===odd?d*dir:0);
+    v.append(s('rect',{x:22,y:y-11,width:22,height:22,rx:6,fill:P.faint}),s('text',{x,y:y+5.5,'font-size':15,'font-weight':500,fill:P.ink},t));
+    if(i<4)v.append(s('line',{x1:22,x2:298,y1:y+19,y2:y+19,stroke:P.soft}));
+    v.append(tap(s('rect',{x:0,y:y-19,width:320,height:38,fill:'transparent',class:'hit'}),()=>{
+      const oy=30+odd*38;gl(v,X,4,X,208);ring(v,6,oy-16,308,32,5);tag(v,250,oy,`${d}px ${dir>0?'오른쪽':'왼쪽'}`);
+      ctx.done({binary:true,score:i===odd?100:0,why:'같은 종류의 요소는 보이지 않는 선 하나에 시작점을 맞춥니다. 몇 px만 어긋나도 눈은 어수선하다고 느껴요.'});},t+' 줄'));});}});
+
+const alignDrag={term:'가장자리 맞춤',tip:'요소를 제각각 두지 말고, 이미 있는 선 하나를 골라 거기에 맞춥니다.',q:'버튼을 끌어 글의 왼쪽 선에 맞추세요',build(ctx){
+  const v=svgBoard(ctx,320,200),X=32;let x=X+[22,31,-14,40][rnd(4)];
+  v.append(s('text',{x:X,y:46,'font-size':18,'font-weight':700,fill:P.ink},'주간 리포트가 도착했어요'),
+    s('text',{x:X,y:74,'font-size':13.5,fill:P.mute},'이번 주 방문자는 지난주보다 늘었고,'),
+    s('text',{x:X,y:94,'font-size':13.5,fill:P.mute},'가입 전환율은 조금 떨어졌습니다.'));
+  const g=s('g',{class:'grab'},s('rect',{x:-8,y:-8,width:120,height:56,fill:'transparent'}),s('rect',{x:0,y:0,width:104,height:40,rx:10,fill:P.blue}));
+  const label=s('text',{x:52,y:25,'font-size':14,'font-weight':600,fill:'#fff','text-anchor':'middle','pointer-events':'none'},'자세히 보기');
+  const put=()=>{g.setAttribute('transform',`translate(${x},124)`);label.setAttribute('transform',`translate(${x},124)`);};
+  v.append(g,label);const set=nx=>{x=clamp(Math.round(nx*2)/2,4,212);put();};put();
+  drag(v,g,{label:'버튼 위치',get:()=>({x,y:0}),set:nx=>set(nx)});nudges(ctx,'x',dx=>set(x+dx));
+  return{check(){const e=Math.abs(x-X);gl(v,X,14,X,186);if(e>=.5)tag(v,x+52,182,`${fmt(e)}px ${x>X?'오른쪽':'왼쪽'}`);
+    return{score:byErr(e,.5,10),why:'제목, 본문, 버튼이 같은 왼쪽 선에서 시작하면 한 덩어리로 읽힙니다. 디자인 툴의 분홍 안내선이 바로 이 선이에요.'};}};}};
+
+const para='결제 후 7일 안에는 전액 환불됩니다. 수업을 한 번이라도 들었다면 남은 횟수만큼 계산해 돌려드립니다. 환불은 영업일 기준 3일 안에 처리됩니다.';
+const alignPick=pick({term:'글 정렬',
+  good:`<div class="mk" style="padding:18px"><b style="font-size:16px">환불 규정 안내</b><p style="margin:8px 0 0;color:#4A5468">${para}</p></div>`,
+  bad:`<div class="mk" style="padding:18px;text-align:center"><b style="font-size:16px">환불 규정 안내</b><p style="margin:8px 0 0;color:#4A5468">${para}</p></div>`,
+  why:'여러 줄짜리 글은 왼쪽 정렬이 기본입니다. 줄마다 시작점이 같아야 눈이 다음 줄을 바로 찾아요. 가운데 정렬은 서너 줄 이하의 짧은 글에만 씁니다.'});
+
+/* ---------- 2. 간격 ---------- */
+const fld=(l,v,mt,mb)=>`<div style="margin:${mt}px 0 ${mb}px;font-size:12.5px;font-weight:600;color:#4A5468">${l}</div><div style="border:1px solid #CBD2DB;border-radius:8px;padding:8px 10px">${v}</div>`;
+const formPick=pick({term:'근접성',q:'어느 쪽이 더 빨리 읽히나요?',
+  good:`<div class="mk" style="padding:16px 18px 18px">${fld('이름','김하늘',0,5)}${fld('이메일','haneul@example.com',20,5)}${fld('연락처','010-0000-0000',20,5)}</div>`,
+  bad:`<div class="mk" style="padding:16px 18px 18px">${fld('이름','김하늘',0,12)}${fld('이메일','haneul@example.com',12,12)}${fld('연락처','010-0000-0000',12,12)}</div>`,
+  detail:'나은 쪽: 라벨과 입력칸 5px, 다음 항목까지 20px',
+  why:'가까이 있는 것끼리 한 묶음으로 보입니다. 라벨이 위아래 입력칸과 같은 거리에 있으면 어느 칸의 이름인지 한 번 더 생각하게 돼요.'});
+
+const headGap={term:'제목 간격',tip:'가까이 있는 것끼리 한 묶음으로 보입니다. 제목은 자기 본문 쪽에 붙어야 해요.',q:'"환불 안내"와 그 아래 본문 사이 간격을 조절하세요',build(ctx){
+  const body=h('p',{style:'margin:0;color:#4A5468'},'결제 후 7일 안에는 전액 환불됩니다.');
+  ctx.board.append(h('div',{class:'mk',style:'padding:18px 18px 24px'},h('div',{style:'font-weight:700;font-size:16px'},'수강 안내'),
+    h('p',{style:'margin:8px 0 0;color:#4A5468'},'수업은 매주 화요일 저녁 8시에 시작합니다.'),
+    h('div',{style:'font-weight:700;font-size:16px;margin-top:28px'},'환불 안내'),body));
+  let g=28;slider(ctx,{id:'gap-head',label:'제목 아래 간격',min:0,max:44,step:1,value:28,on:x=>{g=x;body.style.marginTop=x+'px';}});
+  return{check(){const e=g<4?4-g:g>12?g-12:0;return{score:byErr(e,0,16),detail:`제목 위 28px, 제목 아래 ${g}px`,
+    why:'위아래 간격이 같으면 제목이 어느 글의 것인지 흐려집니다. 묶음 안 간격은 묶음 사이 간격보다 확실히 작게, 절반 이하면 분명해요.'};}};}};
+
+const distribute={term:'고른 간격',tip:'같은 종류가 반복되면 그 사이 간격도 같아야 합니다.',q:'세 번째 카드를 끌어 간격을 똑같이 맞추세요',build(ctx){
+  const v=svgBoard(ctx,320,222,P.soft),ys=[14,66,118,170],T=118,names=['김하늘 님이 가입했어요','새 문의가 1건 있어요','결제가 완료됐어요','리뷰가 등록됐어요'];
+  let y=T+[10,-9,12,-11][rnd(4)];
+  const card=t=>s('g',{},s('rect',{x:40,y:0,width:240,height:36,rx:8,fill:'#fff',stroke:P.faint}),s('circle',{cx:60,cy:18,r:8,fill:P.faint}),s('text',{x:78,y:23,'font-size':13.5,'font-weight':500,fill:P.ink,'pointer-events':'none'},t));
+  let mover;ys.forEach((yy,i)=>{const g=card(names[i]);if(i===2){mover=g;g.setAttribute('class','grab');}else g.setAttribute('transform',`translate(0,${yy})`);v.append(g);});
+  const put=()=>mover.setAttribute('transform',`translate(0,${y})`);const set=ny=>{y=clamp(Math.round(ny*2)/2,104,132);put();};put();
+  drag(v,mover,{label:'세 번째 카드 위치',get:()=>({x:0,y}),set:(nx,ny)=>set(ny)});nudges(ctx,'y',(dx,dy)=>set(y+dy));
+  return{check(){const e=Math.abs(y-T),a=y-102,b=170-(y+36);
+    gl(v,296,102,296,y);gl(v,296,y+36,296,170);tag(v,296,(102+y)/2,fmt(a));tag(v,296,(y+36+170)/2,fmt(b));
+    return{score:byErr(e,.5,9),detail:`위 간격 ${fmt(a)}px, 아래 간격 ${fmt(b)}px (다른 간격은 16px)`,why:'반복되는 요소의 간격이 하나만 달라도 리듬이 깨집니다. 간격 값을 4, 8, 16, 24처럼 몇 개로 정해 두고 그 안에서만 고르면 이런 일이 줄어요.'};}};}};
+
+const pcard=p=>`<div class="mk" style="padding:20px"><div style="border:1px solid #CBD2DB;background:#F6F7F9;border-radius:10px;padding:${p}"><div style="display:flex;gap:10px;align-items:center"><div style="width:36px;height:36px;border-radius:50%;background:#CBD2DB;flex:none"></div><div><b>한서윤</b><div style="font-size:12.5px;color:#596275">프론트엔드 개발자</div></div></div><div style="margin-top:12px;color:#4A5468">팀 프로젝트 같이 하실 분을 찾고 있어요.</div></div></div>`;
+const padPick=pick({term:'안쪽 여백',good:pcard('16px'),bad:pcard('7px 30px 22px 9px'),detail:'나은 쪽: 네 방향 모두 16px',
+  why:'상자 안쪽 여백이 방향마다 다르면 내용이 한쪽으로 밀려 보입니다. 특별한 이유가 없으면 네 방향을 같은 값으로 둡니다.'});
+
+const touchTarget={term:'눌리는 영역',tip:'손가락은 아이콘보다 큽니다. 눌리는 영역은 보이는 그림보다 넓게 잡아요.',q:'점선 영역을 키워 엄지로 편하게 누를 수 있게 하세요',build(ctx){
+  const v=svgBoard(ctx,320,150),xs=[90,160,230],Y=78,hits=[];
+  v.append(s('rect',{x:20,y:Y-34,width:280,height:68,rx:12,fill:P.soft}));
+  ['search','bell','user'].forEach((n,i)=>{const r=s('rect',{fill:'rgba(217,37,98,.08)',stroke:P.guide,'stroke-width':1,'stroke-dasharray':'3 3',rx:6});hits.push(r);
+    v.append(r,s('g',{fill:'none',stroke:P.ink,'stroke-width':2,'stroke-linecap':'round','stroke-linejoin':'round',transform:`translate(${xs[i]-10},${Y-10}) scale(${20/24})`,html:IC[n]}));});
+  let z=20;slider(ctx,{id:'tt',label:'영역 크기',min:12,max:56,step:1,value:20,on:x=>{z=x;hits.forEach((r,i)=>setA(r,{x:xs[i]-x/2,y:Y-x/2,width:x,height:x}));}});
+  return{check(){tag(v,160,134,`${z} × ${z}px`);
+    return{score:z>=44?100:z>=24?75:Math.round(50*clamp((z-12)/12,0,1)),detail:`내 값 ${z}×${z}px, 최소 24px(WCAG AA), 권장 44px(WCAG AAA)`,
+      why:z>=44?'44px 이상이면 손이 떨리거나 화면이 흔들려도 옆 버튼을 잘못 누르지 않습니다. Google은 48dp, Apple은 44pt를 권해요.':z>=24?'최소 기준 24px은 넘겼어요. 다만 자주 누르는 버튼은 44px까지 키우면 훨씬 덜 헷갈립니다.':'24px보다 작으면 웹 접근성 기준에 못 미칩니다. 아이콘 크기는 그대로 두고 눌리는 영역만 넓혀도 돼요.'};}};}};
+
+/* ---------- 3. 색감 ---------- */
+const hslTrap={term:'보이는 밝기',q:'여섯 칸 모두 HSL 명도 50%예요. 가장 밝아 보이는 칸을 누르세요',build(ctx){
+  const hues=shuffle([0,60,120,180,240,300]),grid=h('div',{class:'swg'}),lums=hues.map(x=>lum(hsl2rgb(x,100,50))),top=lums.indexOf(Math.max(...lums));
+  hues.forEach((x,i)=>grid.append(tap(h('div',{class:'sw',style:`background:hsl(${x} 100% 50%);display:flex;align-items:flex-end;padding:6px`}),()=>{
+    [...grid.children].forEach((c,j)=>c.append(h('span',{style:'font-size:11.5px;font-weight:600;background:#fff;color:#1A2233;padding:1px 6px;border-radius:99px'},'휘도 '+lums[j].toFixed(2))));
+    grid.children[top].classList.add('ring');
+    ctx.done({binary:true,score:i===top?100:0,detail:'명도 값은 모두 50%, 실제 휘도는 노랑 0.93 · 파랑 0.07',why:'HSL의 명도는 눈에 보이는 밝기가 아닙니다. 같은 50%여도 노랑은 파랑보다 13배쯤 밝아서, 파랑 위에서 읽히던 흰 글자가 노랑 위에서는 사라져요. 대비는 숫자 이름이 아니라 휘도로 계산합니다.'});},`${i+1}번 칸`)));
+  ctx.board.append(grid);}};
+
+const nfield=c=>`<div class="mk" style="padding:16px 18px 18px">${['이름','이메일'].map((l,i)=>`<div style="margin:${i?16:0}px 0 5px;font-size:12.5px;font-weight:600;color:#4A5468">${l}</div><div style="border:1px solid ${c};border-radius:8px;padding:8px 10px;color:#7C8596">${i?'name@example.com':'이름을 입력하세요'}</div>`).join('')}</div>`;
+const nonText=pick({term:'테두리 대비',q:'입력칸이 어디 있는지 더 잘 보이는 쪽을 누르세요',good:nfield('#858FA1'),bad:nfield('#D5DAE1'),
+  detail:`테두리와 흰 배경의 대비: 나은 쪽 ${ratio(contrast(hex2rgb('#858FA1'),[255,255,255]))}:1, 다른 쪽 ${ratio(contrast(hex2rgb('#D5DAE1'),[255,255,255]))}:1 (기준 3:1)`,
+  why:'글자뿐 아니라 입력칸 테두리, 아이콘, 포커스 표시도 주변과 3:1 이상 대비가 나야 합니다. 연한 테두리는 깔끔해 보여도 밝은 화면에서는 칸이 어디 있는지 사라져요.'});
+const oddSwatch=dl=>({term:'명도',q:'색이 다른 한 칸을 누르세요',build(ctx){
+  const hue=[212,262,152,18,338][rnd(5)],L=52,odd=rnd(9),grid=h('div',{class:'swg'});
+  for(let i=0;i<9;i++){grid.append(tap(h('div',{class:'sw',style:`background:hsl(${hue} 62% ${L+(i===odd?dl:0)}%)`}),()=>{grid.children[odd].classList.add('ring');
+    ctx.done({binary:true,score:i===odd?100:0,detail:`그 칸만 명도 ${dl>0?'+':''}${dl}%`,why:'색은 색상, 채도, 명도 세 값으로 이루어집니다. 그중 눈이 가장 민감하게 잡아내는 건 명도(밝기) 차이예요.'});},`${i+1}번 칸`));}
+  ctx.board.append(grid);}});
+
+const hslMatch={term:'색의 세 손잡이',tip:'모든 색은 색상(무슨 색), 채도(얼마나 선명한가), 명도(얼마나 밝은가)로 만듭니다.',q:'"내 색"을 "목표"와 같게 맞추세요',build(ctx){
+  const T=[[262,58,58],[168,62,40],[24,86,56],[205,76,46],[340,68,58]][rnd(5)],c=[(T[0]+140)%360,30,70];
+  const b=h('div',{class:'mt'},h('span',{},'내 색'));
+  ctx.board.append(h('div',{class:'match'},h('div',{class:'mt',style:`background:hsl(${T[0]} ${T[1]}% ${T[2]}%)`},h('span',{},'목표')),b));
+  const paint=()=>{b.style.background=`hsl(${c[0]} ${c[1]}% ${c[2]}%)`;};
+  slider(ctx,{id:'m-h',label:'색상',min:0,max:360,step:1,value:c[0],on:x=>{c[0]=x;paint();}});
+  slider(ctx,{id:'m-s',label:'채도',min:0,max:100,step:1,value:c[1],on:x=>{c[1]=x;paint();}});
+  slider(ctx,{id:'m-l',label:'명도',min:10,max:90,step:1,value:c[2],on:x=>{c[2]=x;paint();}});
+  return{check(){const A=hsl2rgb(T[0],T[1],T[2]),B=hsl2rgb(c[0],c[1],c[2]),d=Math.hypot(A[0]-B[0],A[1]-B[1],A[2]-B[2]);
+    return{score:byErr(d,14,130),detail:`목표 ${T[0]}° / ${T[1]}% / ${T[2]}%, 내 값 ${c[0]}° / ${c[1]}% / ${c[2]}%`,
+      why:'색을 고칠 때 "조금 더 밝게", "덜 쨍하게"처럼 손잡이를 하나씩만 움직이면 원하는 색에 훨씬 빨리 닿습니다.'};}};}};
+
+const contrastBtn={term:'대비',tip:'글자와 배경의 밝기 차이가 4.5:1 이상이면 대부분의 사람이 무리 없이 읽습니다. 웹 접근성 표준(WCAG)의 기준이에요.',q:'숫자 없이 눈으로만, 흰 글자가 편하게 읽힐 때까지 버튼을 어둡게 하세요',build(ctx){
+  const btn=h('div',{style:'margin:34px auto;width:200px;padding:13px 0;border-radius:10px;color:#fff;font-weight:600;font-size:15px;text-align:center'},'무료로 시작하기');
+  ctx.board.append(h('div',{class:'mk',style:'padding:4px 18px'},btn));
+  let L=78;slider(ctx,{id:'c-l',label:'버튼 밝기',min:28,max:82,step:1,value:78,on:x=>{L=x;btn.style.background=`hsl(214 86% ${x}%)`;}});
+  return{check(){const c=contrast(hsl2rgb(214,86,L),[255,255,255]);
+    return{score:c>=4.5?(c>8.5?85:100):byErr(4.5-c,0,2.2),detail:`대비 ${ratio(c)}:1 (기준 4.5:1)`,
+      why:c>=4.5?(c>8.5?'기준은 넉넉히 넘겼어요. 다만 이만큼 어두우면 브랜드 색의 생기가 줄어듭니다. 4.5:1을 넘기는 가장 밝은 지점을 찾는 연습을 해보세요.':'기준을 넘겼습니다. 밝은 배경에 흰 글자는 생각보다 일찍 안 읽히기 시작해요.'):'아직 기준에 못 미칩니다. 화면 밝기가 낮거나 햇빛 아래에서는 이 글자가 배경에 묻혀요.'};}};}};
+
+const app=(bg,head,headInk,tags,btn,btnInk)=>`<div class="mk" style="background:${bg}"><div style="background:${head};color:${headInk};padding:11px 16px;font-weight:700">오늘의 스터디</div><div style="padding:12px 16px 16px">${['알고리즘 풀이 모임','영어 회화 30분','사이드 프로젝트 회의'].map((t,i)=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0"><span>${t}</span><span style="font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:99px;background:${tags[i][0]};color:${tags[i][1]}">${['모집 중','마감 임박','진행 중'][i]}</span></div>`).join('')}<div style="margin-top:10px;background:${btn};color:${btnInk};text-align:center;padding:10px;border-radius:8px;font-weight:600">모임 만들기</div></div></div>`;
+const palettePick=pick({term:'색의 비율',
+  good:app('#FFFFFF','#F1F3F6','#1A2233',[['#E4E8EE','#3D4658'],['#E4E8EE','#3D4658'],['#E4E8EE','#3D4658']],'#2B63F6','#fff'),
+  bad:app('#FFF6B8','#E53935','#fff',[['#7B2FF7','#fff'],['#FF8A00','#fff'],['#00A651','#fff']],'#00B8D9','#1A2233'),
+  detail:'나은 쪽: 무채색 바탕에 강조색 한 가지',
+  why:'선명한 색이 여러 개면 전부 "여기 봐"라고 외쳐서 아무것도 눈에 안 들어옵니다. 바탕색 60, 보조색 30, 강조색 10 비율이 흔한 출발점이고, 강조색은 가장 중요한 버튼 하나에 아껴 씁니다.'});
+
+const banner=c=>`<div class="mk" style="background:#1F4FD8;padding:20px 18px"><div style="color:#fff;font-weight:700;font-size:17px">첫 달 무료로 써보세요</div><div style="color:${c};margin-top:4px">카드 등록 없이 바로 시작할 수 있어요.</div></div>`;
+const greyOnColor=pick({term:'색 위의 글자',q:'보조 문구가 더 자연스러운 쪽을 누르세요',good:banner('#C9DAFF'),bad:banner('#98A1B0'),
+  detail:'나은 쪽 대비 약 4.7:1, 회색 쪽 약 2.5:1',
+  why:'색 배경 위에 회색 글자를 올리면 탁하고 흐려 보입니다. 배경과 같은 계열에서 밝기만 올린 색을 쓰면 덜 중요해 보이면서도 또렷해요.'});
+
+const errField=more=>`<div class="mk" style="padding:16px 18px 18px">${fld('이름','김하늘',0,5)}<div style="margin:18px 0 5px;font-size:12.5px;font-weight:600;color:#4A5468">이메일</div><div style="border:1.5px solid #D92D20;border-radius:8px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center"><span>haneul@example</span>${more?'<svg width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#D92D20"/><path d="M9 4.5v5.5M9 12.6v.4" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>':''}</div>${more?'<div style="margin-top:5px;font-size:12.5px;color:#B42318">주소 뒷부분(.com 등)이 빠졌어요</div>':''}</div>`;
+const colorAlone=pick({term:'색에만 기대지 않기',q:'오류를 더 잘 알려주는 쪽을 누르세요',good:errField(true),bad:errField(false),
+  why:'빨간 테두리만으로는 색을 구분하기 어려운 사람에게 오류가 보이지 않습니다. 적록 색각 이상은 북유럽계 남성 기준 약 12명 중 1명이에요. 색에는 항상 아이콘이나 문구를 함께 씁니다.'});
+
+const cart=(sale,del)=>`<div class="mk" style="padding:14px 18px">${[['무선 이어폰','49,000원',true],['휴대폰 케이스','12,000원',false]].map(r=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0"><div style="width:34px;height:34px;border-radius:8px;background:#E4E8EE;flex:none"></div><div style="flex:1"><div style="font-weight:500">${r[0]}</div><div style="font-size:12.5px;color:#596275">${r[1]}${r[2]?` <span style="font-weight:600;font-size:11.5px;padding:1px 7px;border-radius:99px;${sale}">20% 할인</span>`:''}</div></div><span style="font-size:12.5px;font-weight:600;${del}">삭제</span></div>`).join('')}</div>`;
+const meaningPick=pick({term:'한 색 한 뜻',q:'빨간색이 무슨 뜻인지 헷갈리지 않는 쪽을 누르세요',
+  good:cart('background:#E3EBFF;color:#1F4FD8','color:#B42318'),bad:cart('background:#FDE7E5;color:#B42318','color:#B42318'),
+  detail:'나은 쪽: 빨강은 삭제에만, 할인은 파랑',
+  why:'같은 빨강이 "할인"과 "삭제"에 함께 쓰이면 빨간 것을 볼 때마다 좋은 건지 위험한 건지 다시 읽어야 합니다. 한 색에는 앱 전체에서 한 가지 뜻만 줍니다.'});
+
+/* ---------- 4. 위계 ---------- */
+const chk=g=>`<div class="mk" style="padding:32px 16px 16px">${g?'':'<div style="background:#FF8A00;color:#fff;font-weight:700;padding:10px 12px;border-radius:8px;font-size:15px">지금 가입하면 쿠폰 3장!</div>'}<div style="margin-top:${g?0:12}px;font-size:12.5px;color:#596275">총 결제 금액</div><div style="font-size:${g?24:15}px;font-weight:700;line-height:1.35">32,000원</div><div style="margin-top:12px;text-align:center;padding:10px;border-radius:8px;font-weight:600;${g?'background:#2B63F6;color:#fff':'border:1px solid #CBD2DB;color:#3D4658'}">결제하기</div>${g?'<div style="margin-top:8px;font-size:12.5px;color:#596275;text-align:center">쿠폰은 다음 화면에서 쓸 수 있어요</div>':''}</div>`;
+const squintPick=pick({term:'흐리게 보기',q:'흐리게 봐도 "결제하기"가 먼저 눈에 들어오는 쪽을 누르세요',row:true,blur:true,good:chk(true),bad:chk(false),
+  detail:'두 보기를 5px 흐리게 해서 보여 드렸어요',
+  why:'눈을 가늘게 뜨고 봤을 때 가장 먼저 보이는 것이 그 화면의 주인공이어야 합니다. 디자인 툴에서 화면을 흐리게 해 보면 엉뚱한 배너가 주목을 빼앗는지 바로 드러나요.'});
+const ev=st=>`<div class="mk" style="padding:18px"><div style="${st[0]}">토요일 창업 스터디</div><div style="${st[1]}">11월 21일 오전 10시, 성수동 공유오피스</div><div style="${st[2]}">각자 쓴 한 장 소개서를 읽고 서로 한 줄씩 의견을 남깁니다.</div><div style="${st[3]}">참가비 5,000원</div></div>`;
+const cardPick=pick({term:'읽는 순서',q:'무엇부터 읽어야 할지 바로 보이는 쪽을 누르세요',
+  good:ev(['font-size:18px;font-weight:700;line-height:1.35','font-size:12.5px;color:#596275;margin-top:3px','margin-top:10px;color:#3D4658','margin-top:10px;font-weight:600']),
+  bad:ev(['','','','']),
+  why:'전부 같은 크기와 굵기면 읽는 사람이 직접 중요한 걸 골라내야 합니다. 크기, 굵기, 색 세 가지로 "먼저 볼 것"과 "나중에 볼 것"을 나눠 주세요.'});
+
+const dlg=two=>`<div class="mk" style="padding:20px 18px"><b style="font-size:16px">작성 중인 글이 있어요</b><div style="color:#4A5468;margin-top:4px">저장하지 않고 나가면 내용이 사라집니다.</div><div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end"><span style="padding:9px 16px;border-radius:8px;font-weight:600;${two?'background:#2B63F6;color:#fff':'color:#3D4658'}">나가기</span><span style="padding:9px 16px;border-radius:8px;font-weight:600;background:#2B63F6;color:#fff">저장하고 나가기</span></div></div>`;
+const btnPick=pick({term:'버튼의 우선순위',good:dlg(false),bad:dlg(true),
+  why:'버튼 두 개가 똑같이 강하면 어느 쪽을 눌러야 할지 멈칫하게 됩니다. 가장 권하는 행동 하나만 채우고, 나머지는 글자만 두거나 테두리로 낮춥니다.'});
+
+const metaGrey={term:'보조 글자의 색',tip:'덜 중요한 정보는 크기를 줄이기 전에 색을 한 단계 물러나게 합니다. 단, 읽히는 선은 지켜야 해요.',q:'날짜와 장소 줄이 제목보다 물러나 보이되, 여전히 읽히게 조절하세요',build(ctx){
+  const meta=h('div',{style:'font-size:13.5px;margin-top:4px'},'11월 21일 오전 10시, 성수동 공유오피스');
+  ctx.board.append(h('div',{class:'mk',style:'padding:26px 18px'},h('div',{style:'font-size:18px;font-weight:700;line-height:1.35'},'토요일 창업 스터디'),meta));
+  let L=14;slider(ctx,{id:'meta-l',label:'글자 밝기',min:10,max:86,step:1,value:14,on:x=>{L=x;meta.style.color=`hsl(220 12% ${x}%)`;}});
+  return{check(){const c=contrast(hsl2rgb(220,12,L),[255,255,255]);const sc=c<4.5?byErr(4.5-c,0,2.2):c>10?byErr(c-10,0,6):100;
+    return{score:sc,detail:`흰 배경과의 대비 ${ratio(c)}:1 (읽히는 선 4.5:1)`,
+      why:c<4.5?'너무 연해서 읽기 어려워졌어요. 흰 배경에서는 #767676보다 밝은 회색이면 기준 아래로 내려갑니다.':c>10?'제목과 거의 같은 진하기라 두 줄이 같은 무게로 보여요. 조금 더 물러나도 됩니다.':'제목은 진하게, 보조 정보는 한 단계 연하게. 색만으로도 읽는 순서가 생깁니다.'};}};}};
+
+const stat=g=>`<div class="mk" style="padding:20px 18px">${g?'<div style="font-size:12.5px;color:#596275">이번 달 매출</div><div style="font-size:28px;font-weight:700;line-height:1.3;letter-spacing:-.01em">1,284,000원</div><div style="font-size:12.5px;color:#0A7F58;font-weight:600">지난달보다 12% 늘었어요</div>':'<div style="font-size:19px;font-weight:700">이번 달 매출</div><div style="font-size:13px;color:#596275">1,284,000원</div><div style="font-size:13px;color:#596275">지난달보다 12% 늘었어요</div>'}</div>`;
+const statPick=pick({term:'주인공 정하기',q:'알고 싶은 내용이 먼저 보이는 쪽을 누르세요',good:stat(true),bad:stat(false),
+  why:'사람들이 보러 온 건 "이번 달 매출"이라는 이름이 아니라 숫자입니다. 이름표는 작고 연하게, 값은 크고 진하게 둡니다.'});
+
+/* ---------- 5. 글자 ---------- */
+const lineHeight={term:'줄 간격',tip:'한글은 글자가 네모 칸을 꽉 채워서, 본문 줄 사이를 영문보다 넉넉히 둡니다.',q:'가장 편하게 읽히는 줄 간격을 찾으세요',build(ctx){
+  const p=h('p',{style:'margin:0;font-size:14.5px'},'처음 소개서를 쓰면 하고 싶은 말을 전부 넣게 됩니다. 하지만 읽는 사람은 한 장에 1분도 쓰지 않아요. 문제, 해결책, 근거를 한 문장씩 먼저 적고 나머지를 덧붙이세요.');
+  ctx.board.append(h('div',{class:'mk',style:'padding:18px'},p));
+  let v=1.05;slider(ctx,{id:'lh',label:'줄 간격',min:1,max:2.4,step:.05,value:1.05,on:x=>{v=x;p.style.lineHeight=x;}});
+  return{check(){const e=v<1.5?1.5-v:v>1.8?v-1.8:0;return{score:byErr(e,0,.45),detail:`내 값 ${v.toFixed(2)}배, 권장 1.5~1.8배`,
+    why:'한글 본문 줄 간격은 글자 크기의 1.5~1.8배가 흔한 권장값입니다(표준이 아니라 실무 관례예요). 좁으면 줄이 뭉치고, 넓으면 문단이 낱줄로 흩어집니다.'};}};}};
+
+const sc=z=>`<div class="mk" style="padding:20px 18px"><div style="font-size:${z[0]}px;font-weight:${z[3]};line-height:1.3">처음 만드는 포트폴리오</div><div style="font-size:${z[1]}px;font-weight:${z[4]};margin-top:6px">프로젝트 세 개면 충분해요</div><div style="font-size:${z[2]}px;margin-top:8px;color:#4A5468">많이 넣는 것보다 하나를 깊게 설명하는 편이 낫습니다.</div></div>`;
+const scalePick=pick({term:'크기 단계',q:'제목, 부제, 본문이 한눈에 구분되는 쪽을 누르세요',good:sc([24,16,13,700,600]),bad:sc([17,16,15,500,500]),
+  detail:'나은 쪽 24 / 16 / 13px, 다른 쪽 17 / 16 / 15px',
+  why:'1px씩 차이 나는 크기는 구분되지 않고 실수처럼 보입니다. 한 단계마다 1.2~1.5배쯤 벌어지게 몇 가지 크기만 정해 두고 씁니다.'});
+
+const hd=l=>`<div class="mk" style="padding:20px 18px"><div style="font-size:26px;font-weight:700;line-height:${l};letter-spacing:-.02em">혼자서도 끝까지 쓰는<br>첫 번째 소개서</div><div style="margin-top:10px;color:#4A5468;line-height:1.6">빈 화면 앞에서 막막한 분을 위한 순서입니다.</div></div>`;
+const headLH=pick({term:'제목의 줄 간격',q:'두 줄 제목이 한 덩어리로 보이는 쪽을 누르세요',good:hd(1.25),bad:hd(1.75),detail:'나은 쪽 1.25배, 다른 쪽 1.75배',
+  why:'글자가 커질수록 줄 간격은 좁혀야 합니다. 본문에 맞는 1.6배를 큰 제목에 그대로 쓰면 두 줄이 서로 남남처럼 떨어져 보여요.'});
+
+const tracking={term:'자간',tip:'큰 제목은 글자 사이가 실제보다 벌어져 보입니다.',q:'제목 글자 사이를 가장 단단해 보이게 조절하세요',build(ctx){
+  const t=h('div',{style:'font-size:27px;font-weight:700;line-height:1.3;white-space:nowrap'},'작게 시작해도 돼요');
+  ctx.board.append(h('div',{class:'mk',style:'padding:34px 18px;overflow:hidden'},t));
+  let v=.12;slider(ctx,{id:'trk',label:'글자 사이',min:-.1,max:.2,step:.005,value:.12,on:x=>{v=x;t.style.letterSpacing=x+'em';}});
+  return{check(){const e=v<-.04?-.04-v:v>.005?v-.005:0;return{score:byErr(e,0,.07),detail:`내 값 ${(v*100).toFixed(1)}%, 흔한 범위 0 ~ -4%`,
+    why:'한글 제목 자간은 0에서 살짝 좁히는 정도가 흔한 관례입니다. 정부 디자인 시스템(KRDS)처럼 0을 그대로 쓰는 곳도 있어요. 넓히면 글자가 낱개로 흩어지고, 너무 좁히면 서로 붙습니다.'};}};}};
+
+const brk=wb=>`<div class="mk" style="padding:18px"><div style="max-width:214px;font-size:15.5px;line-height:1.6;word-break:${wb}"><b>회원가입을 마치면 첫 주문에 쓸 수 있는 할인 쿠폰을 바로 보내 드립니다.</b></div></div>`;
+const breakPick=pick({term:'한글 줄바꿈',q:'낱말이 중간에 잘리지 않은 쪽을 누르세요',good:brk('keep-all'),bad:brk('break-all'),
+  detail:'나은 쪽 word-break: keep-all, 다른 쪽 break-all',
+  why:'한글은 기본 설정이면 글자 단위로 줄이 넘어가서 한 낱말이 두 줄로 갈라지기도 합니다. CSS에 word-break: keep-all을 주면 띄어쓰기 자리에서만 줄을 바꿔요.'});
+
+/* ---------- 6. 아이콘 ---------- */
+const IC={
+  home:'<path d="M4 11.5 12 4.5l8 7V20h-5.5v-5.5h-5V20H4z"/>',
+  search:'<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
+  heart:'<path d="M12 20C6 15.6 3.5 12.3 3.5 9a4.3 4.3 0 0 1 8.5-1 4.3 4.3 0 0 1 8.5 1c0 3.3-2.5 6.6-8.5 11z"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 20.5c0-3.6 3.6-6 8-6s8 2.4 8 6"/>',
+  bell:'<path d="M6 17v-6a6 6 0 0 1 12 0v6l1.5 2h-15z"/><path d="M10 21.5h4"/>',
+  mail:'<rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M4 7.5l8 6 8-6"/>',
+  star:'<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/>',
+  clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  mark:'<path d="M6.5 4h11v16.5L12 16.5l-5.5 4z"/>',
+  chat:'<path d="M4 5h16v11.5h-9.5L6.5 20v-3.5H4z"/>'};
+const GLOSSY='<defs><radialGradient id="gh" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#FF9AA8"/><stop offset=".55" stop-color="#E5173F"/><stop offset="1" stop-color="#8C0B28"/></radialGradient></defs><ellipse cx="12" cy="21.3" rx="6.5" ry="1.3" fill="#000" opacity=".2"/><path d="M12 20C6 15.6 3.5 12.3 3.5 9a4.3 4.3 0 0 1 8.5-1 4.3 4.3 0 0 1 8.5 1c0 3.3-2.5 6.6-8.5 11z" fill="url(#gh)"/><ellipse cx="8.2" cy="8" rx="2.2" ry="1.3" fill="#fff" opacity=".65" transform="rotate(-30 8.2 8)"/>';
+function iconSpot(kind){const M={
+  real:{q:'분위기가 혼자 다른 아이콘을 누르세요',det:'입체 스타일 1개, 선 스타일 8개',pool:['heart'],why:'선으로 그린 아이콘 사이에 입체감 있는 아이콘이 하나 끼면 그것만 튀어 보입니다. 한 화면의 아이콘은 한 가지 스타일로 통일합니다.'},
+  fill:{q:'스타일이 다른 아이콘 하나를 누르세요',det:'채운 아이콘 1개, 선 아이콘 8개',pool:['heart','star','mark','home','chat','bell'],why:'채운 아이콘과 선 아이콘을 이유 없이 섞으면 채운 쪽이 "선택됨"처럼 읽힙니다. 섞을 땐 뜻이 있어야 해요. 지금 보고 있는 탭만 채우는 식으로요.'},
+  weight:{q:'선 굵기가 다른 아이콘을 누르세요',det:'1.25px 1개, 2px 8개',pool:Object.keys(IC),why:'아이콘 세트는 선 굵기 하나로 그립니다. Material과 Lucide 모두 24px 칸에 2px 선이 기준이에요. 다른 세트에서 하나만 가져오면 굵기부터 어긋납니다.'},
+  corner:{q:'선 끝과 모서리 처리가 다른 아이콘을 누르세요',det:'각진 처리 1개, 둥근 처리 8개',pool:['home','mark','star','chat','mail','search'],why:'둥근 끝은 부드럽고 각진 끝은 딱딱합니다. 한 세트 안에서는 선 끝과 모서리 처리도 한 가지로 맞춥니다.'},
+  size:{q:'혼자 크게 그려진 아이콘을 누르세요',det:'118% 크기 1개',pool:Object.keys(IC),why:'아이콘은 같은 칸 안에서 비슷한 크기로 보여야 합니다. 세트마다 칸 가장자리에 비워 두는 여백을 정해 두는 이유예요.'}}[kind];
+  return{term:'아이콘 일관성',q:M.q,build(ctx){
+    const v=svgBoard(ctx,300,300),oddName=M.pool[rnd(M.pool.length)];
+    const names=shuffle([oddName,...shuffle(Object.keys(IC).filter(n=>n!==oddName)).slice(0,8)]),odd=names.indexOf(oddName);
+    const at=i=>[50+(i%3)*100,50+Math.floor(i/3)*100];
+    names.forEach((n,i)=>{const[cx,cy]=at(i),isOdd=i===odd;let k=2,inner=IC[n],a={fill:'none',stroke:P.ink,'stroke-width':2,'stroke-linecap':'round','stroke-linejoin':'round'};
+      if(isOdd){if(kind==='fill')a.fill=P.ink;if(kind==='weight')a['stroke-width']=1.25;
+        if(kind==='corner'){a['stroke-linecap']='butt';a['stroke-linejoin']='miter';inner=inner.replace('rx="2"','rx="0"');}
+        if(kind==='size')k=2.36;if(kind==='real'){a={};inner=GLOSSY;}}
+      v.append(s('g',Object.assign(a,{transform:`translate(${cx-12*k},${cy-12*k}) scale(${k})`,html:inner})));
+      v.append(tap(s('rect',{x:cx-46,y:cy-46,width:92,height:92,rx:8,fill:'transparent',class:'hit'}),()=>{const[ox,oy]=at(odd);ring(v,ox-44,oy-44,88,88,8);
+        ctx.done({binary:true,score:isOdd?100:0,detail:M.det,why:M.why});},`${i+1}번 아이콘`));});}};}
+
+/* ---------- 7. 형태감 ---------- */
+const radiusSpot={term:'모서리',q:'모서리 둥글기가 혼자 다른 요소를 누르세요',build(ctx){
+  const v=svgBoard(ctx,320,232,P.soft),odd=rnd(5),els=[[20,16,280,42,'#fff',P.faint,'검색창'],[20,70,112,92,'#C9D2DE',null,'사진'],[144,70,156,92,'#fff',P.faint,'카드'],[20,174,134,42,P.blue,null,'채운 버튼'],[166,174,134,42,'#fff',P.faint,'테두리 버튼']];
+  els.forEach(e=>v.append(s('rect',{x:e[0],y:e[1],width:e[2],height:e[3],rx:els.indexOf(e)===odd?2:12,fill:e[4],stroke:e[5]})));
+  const tx=(x,y,t,o)=>v.append(s('text',Object.assign({x,y,'font-size':13.5,fill:P.ink,'pointer-events':'none'},o),t));
+  tx(36,42,'검색어를 입력하세요',{fill:P.mute});tx(158,102,'오늘의 추천',{'font-weight':700,'font-size':14.5});tx(158,124,'새로 올라온 글 3개',{fill:P.mute,'font-size':12.5});
+  tx(87,200,'시작하기',{fill:'#fff','font-weight':600,'text-anchor':'middle'});tx(233,200,'나중에',{'font-weight':600,'text-anchor':'middle'});
+  els.forEach((e,i)=>v.append(tap(s('rect',{x:e[0],y:e[1],width:e[2],height:e[3],fill:'transparent',class:'hit'}),()=>{const o=els[odd];ring(v,o[0]-4,o[1]-4,o[2]+8,o[3]+8,6);
+    ctx.done({binary:true,score:i===odd?100:0,detail:'12px 4개, 2px 1개',why:'모서리 둥글기도 제품의 말투입니다. 한 화면에서는 정해 둔 값 한두 개만 쓰고, 하나만 각지면 다른 제품에서 떼어 온 부품처럼 보여요.'});},e[6])));}};
+
+const nestedRadius={term:'안쪽 모서리',tip:'둥근 상자 안에 둥근 상자를 넣을 땐 안쪽을 더 작게 깎아야 테두리 두께가 고르게 보입니다.',q:'안쪽 사진의 모서리를 바깥 카드에 어울리게 조절하세요',build(ctx){
+  const v=svgBoard(ctx,320,220,P.soft),R=32,PAD=14;v.append(s('rect',{x:50,y:22,width:220,height:170,rx:R,fill:P.ink}));
+  const inner=s('rect',{x:50+PAD,y:22+PAD,width:220-2*PAD,height:170-2*PAD,fill:'#8FB1FF'});v.append(inner);
+  let r=R;slider(ctx,{id:'nr',label:'안쪽 모서리',min:0,max:40,step:1,value:R,on:x=>{r=x;inner.setAttribute('rx',x);}});
+  return{check(){const T=R-PAD,e=Math.abs(r-T);v.append(s('circle',{cx:50+R,cy:22+R,r:2.5,fill:P.guide,class:'rl'}));gl(v,50+R,22+R,50+R-R*.707,22+R-R*.707);
+    tag(v,160,207,`바깥 ${R} − 여백 ${PAD} = ${T}`);
+    return{score:byErr(e,1.5,12),detail:`내 값 ${r}px, 맞는 값 ${T}px`,why:'안쪽 반지름 = 바깥 반지름 − 여백입니다. 두 곡선이 같은 중심점을 공유해야 띠 두께가 모서리에서도 일정해요. 안팎을 같은 값으로 두는 게 가장 흔한 실수입니다.'};}};}};
+
+const circleSize={term:'보이는 크기',tip:'폭이 같아도 원은 네모보다 작아 보입니다. 네 귀퉁이가 비어 있기 때문이에요.',q:'원이 네모와 같은 크기로 보이게 지름을 조절하세요',build(ctx){
+  const v=svgBoard(ctx,320,200),S=84;v.append(s('rect',{x:54,y:100-S/2,width:S,height:S,fill:P.ink}));
+  const c=s('circle',{cx:230,cy:100,fill:P.ink});v.append(c);
+  let d=76;slider(ctx,{id:'cs',label:'원 지름',min:66,max:112,step:.5,value:76,on:x=>{d=x;c.setAttribute('r',x/2);}});
+  return{check(){const ratio=d/S,e=ratio<1.09?1.09-ratio:ratio>1.15?ratio-1.15:0;gl(v,30,100-S/2,300,100-S/2,true);gl(v,30,100+S/2,300,100+S/2,true);
+    tag(v,160,186,`네모 ${S}px, 원 ${fmt(d)}px (${Math.round(ratio*100)}%)`);
+    return{score:byErr(e,0,.11),detail:'넓이가 같아지는 비율은 약 113%',why:'넓이를 맞추면 원 지름은 네모 한 변의 약 113%가 됩니다. Material 아이콘 틀도 네모 18, 원 20(약 111%)으로 잡아요. 그래서 둥근 도형은 안내선을 살짝 넘겨 그립니다.'};}};}};
+
+/* ---------- 8. 무게중심 ---------- */
+const triangle={term:'시각적 중심',tip:'도형의 가운데는 상자의 가운데가 아니라 무게가 몰린 곳입니다.',q:'삼각형을 끌어 원의 한가운데로 보이게 놓으세요',build(ctx){
+  const v=svgBoard(ctx,320,224),C={x:160,y:106},W=52,H=60;v.append(s('circle',{cx:C.x,cy:C.y,r:72,fill:P.blue}));
+  let x=C.x-W/2-[9,12,-7][rnd(3)],y=C.y-H/2+[6,-7,5][rnd(3)];
+  const g=s('g',{class:'grab'},s('rect',{x:-16,y:-12,width:W+32,height:H+24,fill:'transparent'}),s('path',{d:`M0 0L${W} ${H/2}L0 ${H}Z`,fill:'#fff'}));
+  const put=()=>g.setAttribute('transform',`translate(${x},${y})`);v.append(g);
+  const set=(nx,ny)=>{x=clamp(Math.round(nx*2)/2,100,178);y=clamp(Math.round(ny*2)/2,48,104);put();};put();
+  drag(v,g,{label:'삼각형 위치',get:()=>({x,y}),set});nudges(ctx,'both',(dx,dy)=>set(x+dx,y+dy));
+  return{check(){const gx=x+W/3,gy=y+H/2,e=Math.hypot(gx-C.x,gy-C.y),boxed=Math.abs(x+W/2-C.x)<2.5&&Math.abs(gy-C.y)<2.5;
+    gl(v,C.x,26,C.x,186,true);gl(v,80,C.y,240,C.y,true);v.append(s('circle',{cx:gx,cy:gy,r:4,fill:P.guide,stroke:'#fff','stroke-width':1.5,class:'rl'}));
+    tag(v,C.x,208,e<1.5?'무게중심이 원 가운데에 있어요':`무게중심이 가운데에서 ${fmt(e)}px`);
+    return{score:byErr(e,1.5,12),why:(boxed?'상자 기준으로는 정확히 가운데에 두셨어요. 그런데 ':'')+'삼각형은 넓은 밑변 쪽이 무겁습니다. 무게중심은 밑변에서 1/3 지점이라, 상자 가운데에 맞추면 왼쪽으로 쏠려 보여요. 뾰족한 쪽으로 폭의 1/6쯤 밀어야 가운데로 보입니다.'};}};}};
+
+const splash=dy=>`<svg viewBox="0 0 150 230" style="display:block;width:100%"><rect width="150" height="230" fill="#F1F3F6"/><g transform="translate(0,${dy})"><rect x="55" y="86.5" width="40" height="40" rx="11" fill="#2B63F6"/><rect x="50" y="136.5" width="50" height="7" rx="3.5" fill="#1A2233"/></g></svg>`;
+const splashPick=pick({term:'화면의 중심',q:'로고가 화면 한가운데에 있어 보이는 쪽을 누르세요',row:true,good:splash(-14),bad:splash(0),
+  detail:'다른 쪽이 수치상 정중앙, 나은 쪽은 14px 위',
+  why:'수치상 정중앙에 두면 오히려 아래로 처져 보입니다. 눈이 느끼는 화면의 중심은 실제 중심보다 살짝 위예요. 얼마나 위인지 정해진 숫자는 없어서 눈으로 맞춥니다.'});
+
+const balanceDrag={term:'좌우 균형',tip:'크기가 클수록, 배경과 대비가 클수록, 중심에서 멀수록 무겁게 느껴집니다.',q:'작은 네모를 끌어 화면 좌우의 무게를 맞추세요',build(ctx){
+  const v=svgBoard(ctx,320,204,P.soft),bigW=110*110*.22,bigX=79,SW=44,smW=SW*SW*.9;v.append(s('rect',{x:24,y:45,width:110,height:110,fill:'#C5CEDB'}));
+  let cx=176+rnd(3)*8;
+  const g=s('g',{class:'grab'},s('rect',{x:-SW/2-12,y:-SW/2-12,width:SW+24,height:SW+24,fill:'transparent'}),s('rect',{x:-SW/2,y:-SW/2,width:SW,height:SW,fill:P.ink}));
+  const put=()=>g.setAttribute('transform',`translate(${cx},100)`);v.append(g);const set=nx=>{cx=clamp(Math.round(nx*2)/2,150,298);put();};put();
+  drag(v,g,{label:'작은 네모 위치',get:()=>({x:cx,y:0}),set:nx=>set(nx)});nudges(ctx,'x',dx=>set(cx+dx));
+  return{check(){const G=(bigW*bigX+smW*cx)/(bigW+smW),e=Math.abs(G-160);gl(v,160,24,160,180,true);
+    v.append(s('path',{d:`M${G} 182l7 12h-14z`,fill:P.guide,class:'rl'}));tag(v,160,13,e<2?'좌우 무게가 맞아요':`무게중심이 ${fmt(e)}px ${G<160?'왼쪽':'오른쪽'}`);
+    return{score:byErr(e,2,22),why:'작고 진한 것이 크고 연한 것과 맞서려면 중심에서 더 멀리 가야 합니다. 시소와 같은 원리예요. 여기서는 무게를 "넓이 × 배경과의 대비"로 단순하게 계산했고, 실제 화면에서는 공식 없이 눈으로 판단합니다.'};}};}};
+
+/* ---------- 단계 구성 ---------- */
+const STAGES=[
+  {id:'align',lv:'기초',name:'정렬',desc:'보이지 않는 선에 맞춰 놓기',rounds:[S(alignSpot(6),'conv'),S(alignSpot(3),'conv'),S(alignDrag,'conv'),S(alignPick,'conv')]},
+  {id:'spacing',lv:'기초',name:'간격',desc:'가까운 것끼리 한 묶음으로, 누르기 쉽게',rounds:[S(formPick,'conv'),S(headGap,'conv'),S(distribute,'conv'),S(padPick,'conv'),S(touchTarget,'std')]},
+  {id:'color',lv:'기초',name:'색 기초',desc:'밝기를 보는 눈과 읽히는 대비',rounds:[S(oddSwatch(7),'perc'),S(hslTrap,'geo'),S(hslMatch,'perc'),S(contrastBtn,'std'),S(nonText,'std'),S(colorAlone,'std')]},
+  {id:'hierarchy',lv:'중급',name:'위계',desc:'중요한 것부터 눈에 들어오게',rounds:[S(cardPick,'conv'),S(btnPick,'conv'),S(metaGrey,'std'),S(statPick,'conv'),S(squintPick,'conv')]},
+  {id:'type',lv:'중급',name:'글자',desc:'줄 간격, 크기 단계, 자간, 한글 줄바꿈',rounds:[S(lineHeight,'conv'),S(scalePick,'conv'),S(headLH,'conv'),S(tracking,'conv'),S(breakPick,'conv')]},
+  {id:'palette',lv:'중급',name:'색 구성',desc:'색을 아껴 쓰고, 한 색에 한 뜻',rounds:[S(palettePick,'conv'),S(meaningPick,'guide'),S(greyOnColor,'conv')]},
+  {id:'shape',lv:'심화',name:'아이콘·형태',desc:'한 세트처럼 보이게, 눈에 맞게 보정',rounds:[...['real','weight','corner','fill'].map(k=>S(iconSpot(k),'guide')),S(radiusSpot,'conv'),S(nestedRadius,'geo'),S(circleSize,'geo')]},
+  {id:'balance',lv:'심화',name:'무게중심',desc:'수치가 아닌 눈으로 가운데 찾기',rounds:[S(triangle,'geo'),S(splashPick,'eye'),S(balanceDrag,'eye')]}];
+const MIX={id:'mix',name:'섞어 풀기',desc:'여덟 단계에서 무작위로 6문제'};
+const SOURCES=[
+  ['정렬과 간격',[['W3C WCAG 2.2, 터치 영역 최소 크기(2.5.8)','https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html'],['Nielsen Norman Group, 근접성 원리','https://www.nngroup.com/articles/gestalt-proximity/'],['Butterick, Practical Typography 핵심 규칙','https://practicaltypography.com/summary-of-key-rules.html']]],
+  ['색감',[['W3C, 대비 계산법(G18)','https://www.w3.org/WAI/WCAG22/Techniques/general/G18.html'],['W3C WCAG 2.2, 색만으로 전달하지 않기','https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html'],['W3C WCAG 2.2, 비텍스트 대비(1.4.11)','https://w3.org/WAI/WCAG22/Understanding/non-text-contrast'],['Evil Martians, HSL 대신 OKLCH','https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl'],['Nielsen Norman Group, 색 사용과 60-30-10','https://www.nngroup.com/articles/color-enhance-design/'],['Refactoring UI, 색 팔레트 만들기','https://www.refactoringui.com/previews/building-your-color-palette']]],
+  ['위계와 글자',[['Nielsen Norman Group, 시각적 위계','https://www.nngroup.com/articles/visual-hierarchy-ux-definition/'],['요즘IT, UI 디자인 가이드: 타이포그래피','https://yozm.wishket.com/magazine/detail/1017/'],['Butterick, 줄 간격','https://practicaltypography.com/line-spacing.html'],['W3C, 한국어 텍스트 레이아웃 요구사항','https://w3c.github.io/klreq/new'],['Dale Seo, CSS 줄바꿈','https://daleseo.com/css-text-wrap/']]],
+  ['아이콘',[['Material Design 아이콘 가이드(보관본)','https://m1.material.io/style/icons.html'],['Lucide 아이콘 디자인 가이드','https://lucide.dev/contribute/icon-design-guide'],['Design Systems, 아이콘 가이드','https://www.designsystems.com/iconography-guide/']]],
+  ['형태감과 무게중심',[['Bjango, 시각 보정','https://bjango.com/articles/opticaladjustments/'],['Cloud Four, 겹친 둥근 모서리 계산','https://cloudfour.com/thinks/the-math-behind-nesting-rounded-corners/'],['Smashing Magazine, 시각적 무게와 방향','https://www.smashingmagazine.com/2014/12/design-principles-visual-weight-direction'],['Smashing Magazine, 구성의 균형','https://www.smashingmagazine.com/2015/06/design-principles-compositional-balance-symmetry-asymmetry/']]],
+  ['연습 방식',[['Schwartz & Bransford (1998), 먼저 비교하고 설명은 나중에','https://www.wright.edu/sites/www.wright.edu/files/uploads/2017/Feb/event/Schwartz_Bransford_1998_TimeForTelling.pdf'],['Kornell & Bjork (2008), 섞어서 연습하기','https://bjorklab.psych.ucla.edu/wp-content/uploads/sites/13/2016/07/Kornell_Bjork_2008_PsychScience.pdf'],['Thai 외 (2015), 정답을 먼저 보여 주는 지각 학습','https://escholarship.org/content/qt8nv5m69d/qt8nv5m69d.pdf']]]];
+
+/* ---------- 상태 ---------- */
+const KEY='nunsseolmi-v2';let best={};
+try{best=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){best={};}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(best));}catch(e){}};
+let run=null;
+const appEl=document.getElementById('app');
+const roundsOf=st=>st.id==='mix'?run.mix.map(p=>STAGES[p[0]].rounds[p[1]]):st.rounds;
+const ICON_OK='<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M5.8 10.4l2.8 2.8 5.6-6" fill="none" stroke="var(--panel)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ICON_OFF='<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l9 16H1z" fill="currentColor"/><path d="M10 7.5v4.6M10 14.6v.3" stroke="var(--panel)" stroke-width="2" stroke-linecap="round"/></svg>';
+
+/* 연속값은 통과 · 거의 · 다시 세 구간으로 */
+function showFb(fb,res,std){fb.hidden=false;fb.textContent='';const good=res.score>=90;
+  const head=res.binary?(res.score?'맞았어요':'다른 쪽이에요'):`${res.score}점`;
+  const sub=res.binary?'':(res.score>=90?'통과':res.score>=60?'거의 맞았어요':'다시 해볼까요');
+  fb.className='fb '+(good?'good':'off');
+  add(fb,[h('div',{class:'fbh'},h('span',{html:good?ICON_OK:ICON_OFF,style:'display:flex'}),h('strong',{},head),sub&&h('span',{},sub)),
+    res.detail&&h('p',{class:'fbd'},res.detail),h('p',{class:'fbw'},res.why),
+    STD[std]&&h('p',{class:'fbs'},stdChip(std),STD[std][1])]);}
+
+function mountRound(root,round,o){root.textContent='';
+  const board=h('div',{class:'artboard'}),controls=h('div',{class:'controls'}),fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}),actions=h('div',{class:'actions'});
+  add(root,[round.tip&&h('p',{class:'tip'},round.tip),h('h2',{class:'q'},round.q),h('div',{class:'frame'},h('div',{class:'fname'},h('span',{},round.term),stdChip(round.std)),board),controls,fb,actions]);
+  let fin=false;
+  const ctx={board,controls,done(res){if(fin)return;fin=true;board.classList.add('locked');controls.querySelectorAll('input,button').forEach(b=>{b.disabled=true;});
+    showFb(fb,res,round.std);actions.textContent='';o.onDone(res,actions);const f=actions.querySelector('.btn');if(f&&o.focus)f.focus({preventScroll:true});fb.scrollIntoView({block:'nearest',behavior:'smooth'});}};
+  const api=round.build(ctx)||{};
+  if(api.check)actions.append(h('button',{class:'btn primary',type:'button',onclick(){ctx.done(api.check());}},'확인'));}
+
+/* ---------- 화면 ---------- */
+function topBar(){const n=STAGES.filter(x=>best[x.id]!=null).length;
+  return h('header',{class:'top'},h('a',{class:'wordmark',href:'#home'},'눈썰미'),h('span',{class:'count'},`${STAGES.length}단계 중 ${n}단계 완료`));}
+
+function viewHome(){run=null;appEl.textContent='';const warm=h('div',{});
+  const next=STAGES.find(x=>best[x.id]==null);
+  const layers=h('div',{class:'layers'});let lv='';
+  STAGES.forEach((st,i)=>{if(st.lv!==lv){lv=st.lv;layers.append(h('div',{class:'grp'},h('span',{html:'<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3l3.5 4 3.5-4z" fill="currentColor"/></svg>',style:'display:flex'}),lv));}
+    const done=best[st.id]!=null,isNext=next&&next.id===st.id;
+    layers.append(h('a',{class:'layer'+(done?' done':'')+(isNext?' next':''),href:'#'+st.id},h('span',{class:'n'},i+1),
+      h('span',{},h('span',{class:'nm'},st.name),h('span',{class:'ds'},st.desc)),
+      h('span',{class:'stt'},done?`최고 ${best[st.id]}점`:isNext?(i?'이어서 하기':'여기서 시작'):`${st.rounds.length}문제`)));});
+  layers.append(h('a',{class:'layer mix'+(best.mix!=null?' done':''),href:'#mix'},h('span',{class:'n'},'+'),
+    h('span',{},h('span',{class:'nm'},MIX.name),h('span',{class:'ds'},MIX.desc)),h('span',{class:'stt'},best.mix!=null?`최고 ${best.mix}점`:'6문제')));
+  appEl.append(topBar(),
+    h('h1',{},'설명은 한 줄, 나머지는 손으로 익히는 디자인 감각'),
+    h('p',{class:'lede'},'정렬과 간격부터 색, 글자, 아이콘, 무게중심까지 여덟 단계입니다. 정답이 분명한 것부터 눈으로 판단하는 것 순서로 갑니다. 먼저 고르고, 이유는 고른 뒤에 한 줄로 보여 드려요.'),
+    h('div',{class:'legend'},h('span',{},stdChip('std'),'웹 접근성 표준'),h('span',{},stdChip('conv'),'실무 권장값'),h('span',{},stdChip('eye'),'정해진 수치 없음')),
+    h('section',{class:'sec'},h('h2',{},'먼저 한 문제 풀어보세요'),warm),
+    h('section',{class:'sec'},h('h2',{},'단계'),layers),
+    h('p',{class:'foot'},'문항마다 기준이 표준인지 권장인지 꼬리표로 표시했어요. 기준과 수치는 ',h('a',{href:'#sources'},'참고한 자료'),'에서 확인할 수 있어요. 진행 상황은 이 기기 브라우저에만 저장됩니다.'));
+  const mountWarm=()=>mountRound(warm,triangle,{onDone(res,actions){actions.append(h('button',{class:'btn ghost',type:'button',onclick:mountWarm},'다시 해보기'),h('a',{class:'btn primary',href:'#'+(next?next.id:'mix')},next?`${next.name} 단계 시작`:'섞어 풀기'));}});
+  mountWarm();}
+
+function viewStage(st){
+  if(!run||run.id!==st.id){run={id:st.id,i:0,scores:[]};
+    if(st.id==='mix'){const all=[];STAGES.forEach((x,a)=>x.rounds.forEach((r,b)=>all.push([a,b])));run.mix=shuffle(all).slice(0,6);}}
+  renderRound(st);}
+
+function renderRound(st){const rs=roundsOf(st);if(run.i>=rs.length)return renderResult(st,rs);
+  appEl.textContent='';const body=h('div',{});
+  const segs=h('div',{class:'segs','aria-hidden':'true'});rs.forEach((r,i)=>segs.append(h('i',{class:i<run.i?'d':i===run.i?'c':''})));
+  appEl.append(h('div',{class:'sbar'},h('a',{class:'back',href:'#home',html:'<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>단계 목록'}),
+    h('div',{class:'sname'},st.name,h('span',{},`${run.i+1} / ${rs.length}`))),segs,body);
+  mountRound(body,rs[run.i],{focus:true,onDone(res,actions){run.scores[run.i]=res.score;
+    actions.append(h('button',{class:'btn primary',type:'button',onclick(){run.i++;renderRound(st);window.scrollTo(0,0);}},run.i===rs.length-1?'결과 보기':'다음 문제'));}});}
+
+function renderResult(st,rs){const avg=Math.round(run.scores.reduce((a,b)=>a+b,0)/rs.length),prev=best[st.id];
+  if(prev==null||avg>prev){best[st.id]=avg;save();}
+  const idx=STAGES.indexOf(st),nx=idx>=0?STAGES[idx+1]:null,scores=run.scores.slice();run=null;appEl.textContent='';
+  const msg=avg>=90?'눈썰미가 좋아요. 다음 단계로 가도 됩니다.':avg>=70?'감이 잡히고 있어요. 틀린 문제의 이유만 한 번 더 보세요.':'한 번 더 풀면 달라집니다. 문제는 풀 때마다 조금씩 바뀌어요.';
+  appEl.append(topBar(),h('h1',{},`${st.name} 결과`),h('p',{class:'big'},avg,h('small',{},'점')),h('p',{class:'lede'},msg+(prev!=null&&avg>prev?` 지난 최고 기록 ${prev}점을 넘었어요.`:'')),
+    h('ul',{class:'rows'},rs.map((r,i)=>h('li',{},h('span',{},r.term),h('b',{},`${scores[i]}점`)))),
+    h('div',{class:'actions'},h('button',{class:'btn ghost',type:'button',onclick(){viewStage(st);window.scrollTo(0,0);}},'다시 풀기'),
+      nx?h('a',{class:'btn primary',href:'#'+nx.id},`다음 단계: ${nx.name}`):st.id==='mix'?h('a',{class:'btn primary',href:'#home'},'단계 목록으로'):h('a',{class:'btn primary',href:'#mix'},'섞어 풀기')));}
+
+function viewSources(){run=null;appEl.textContent='';
+  appEl.append(topBar(),h('h1',{},'참고한 자료'),
+    h('p',{class:'lede'},'여기 실린 기준 가운데 표준은 웹 접근성 기준(WCAG)의 일곱 항목뿐입니다. 글자 대비 4.5:1과 큰 글자 3:1, 강화 대비 7:1, 테두리·아이콘 대비 3:1, 색만으로 전달하지 않기, 터치 영역 24px과 강화 기준 44px, 사용자가 글자 간격을 바꿔도 깨지지 않기예요. 8px 간격 눈금, 한글 행간 1.5~1.6, 아이콘 선 2px, 60-30-10 같은 나머지는 플랫폼 가이드나 실무 권장값입니다. 대비는 반올림하지 않고 계산해서 4.497:1은 미달로 봅니다.'),
+    h('div',{class:'legend'},Object.keys(STD).map(k=>h('span',{},stdChip(k),STD[k][1]))),
+    h('div',{class:'src'},SOURCES.map(g=>[h('h3',{},g[0]),h('ul',{},g[1].map(x=>h('li',{},h('a',{href:x[1],target:'_blank',rel:'noopener'},x[0]))))])),
+    h('div',{class:'actions'},h('a',{class:'btn ghost',href:'#home'},'단계 목록으로')));}
+
+function route(){const id=(location.hash||'').slice(1);
+  if(id==='sources')return viewSources();
+  const st=id==='mix'?MIX:STAGES.find(x=>x.id===id);
+  if(st)return viewStage(st);viewHome();}
+window.addEventListener('hashchange',()=>{route();window.scrollTo(0,0);});
+const start=d=>{if(d&&d.run&&d.run.id)run=d.run;route();};
+const hot=window.claude&&window.claude.hot;
+if(hot&&hot.snapshot)hot.snapshot(()=>({run}));
+if(hot&&hot.ready)hot.ready(start);else start((hot&&hot.data)||{});
+})();
+</script>
+</body>
+</html>
